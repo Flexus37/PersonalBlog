@@ -1,0 +1,25 @@
+.embed,
+.fr-video {
+    display: block;     // Для блоков с iframe и video
+    position: relative; // чтобы всё адаптировалось по размеру
+    overflow: hidden;
+
+    &:before {
+        content: "";
+        display: block;
+        padding-top: 56.25%; // отношение 16:9 (9 делим на 16)
+    }
+
+    iframe,
+    video,
+    object,
+    embed {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+}

@@ -1,0 +1,54 @@
+@import '../../../style/vars';
+@import '../../../style/mixins';
+
+.add-story {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+    position: relative;
+
+    border: 3px dashed #D2D2D2;
+    border-radius: 5px; // 5px in Figma
+    box-shadow: 0 5px 15px rgba($black, .2);
+    cursor: pointer;
+
+    &__btn {
+        display: block;
+        position: relative;
+        width: 5rem;
+        height: 5rem;
+
+        background: none;
+        border: 3px dashed #D2D2D2;
+        border-radius: 50%;
+
+        margin: 0 auto 1rem;
+
+        & .fa-plus {
+            display: block;
+            width: 100%;
+            text-align: center;
+            font-size: 2.2rem;
+            color: #D2D2D2;
+
+            position: absolute;
+            z-index: 2;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+
+    &__title {
+        display: block;
+        width: 80%;
+        margin: 0 auto;
+
+        color: #D2D2D2;
+        font-weight: bold;
+        text-align: center;
+    }
+
+}

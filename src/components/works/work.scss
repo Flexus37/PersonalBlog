@@ -1,0 +1,84 @@
+@import '../../style/vars';
+@import '../../style/mixins';
+@import '../../style/blocks/tags.scss';
+
+.work {
+    display: flex;
+    margin-bottom: 3rem;
+    overflow: hidden;
+
+    background-color: $primary;
+    box-shadow: 0 15px 25px rgba($black, .35);
+    border-radius: 5px;
+
+    @include breakpoint($mobile-bp) {
+        flex-direction: column;
+    }
+}
+
+.work__preview {
+    width: 31rem;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    @include breakpoint($mobile-bp) {
+        width: 100%;
+        height: 15rem;
+    }
+}
+
+.work__content {
+    display: flex;
+    flex-direction: column;     // прижимаем кноп к низу
+    max-width: 29rem;
+    padding: 2.9rem;
+
+    @include breakpoint($mobile-bp) {
+        max-width: none;
+
+        padding: 1.5rem;
+    }
+}
+
+.work__title {
+    margin-bottom: 3rem;
+
+    font-size: 2.4rem;
+    color: $white;
+    font-weight: 500;
+
+    a {
+        color: inherit;
+    }
+
+    @include breakpoint($mobile-bp) {
+        margin-bottom: 2rem;
+    }
+}
+
+.work__description {
+    margin-bottom: 3rem;
+
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: #d2d2d2;
+    line-height: 1.68; // 27 от 16 (27/16 = 1.68)
+
+    @include breakpoint($mobile-bp) {
+        margin-bottom: 2rem;
+        font-size: 1.4rem;
+    }
+}
+
+.work__footer {
+    margin-top: auto;
+    text-align: right;
+
+    @include breakpoint($mobile-bp) {
+        text-align: left;
+    }
+}

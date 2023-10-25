@@ -1,0 +1,128 @@
+@import '../../style/vars';
+@import '../../style/mixins';
+
+.stories {
+    display: grid;
+    position: relative;
+    grid-template-columns: 1fr 1fr 1fr 1fr; // 1fr*4 - кол-во колонок равных по размеру
+    grid-column-gap: 13px; // отступ между колонками
+    grid-template-rows: 195px; // высота блоков
+    margin-bottom: 3rem;
+
+    @include breakpoint($mobile-bp) {
+        grid-template-columns: 140px 140px 140px 140px;
+        overflow: auto;
+    }
+
+    &__prev-slide,
+    &__next-slide {
+        display: block;
+        width: 3rem;
+        height: 3rem;
+
+        border: none;
+        border-radius: 50%;
+        background-color: $secondary;
+
+        position: absolute;
+        z-index: 4;
+        top: 50%;
+        transform: translateY(-50%);
+
+        color: #fff;
+        transition: color .2s ease-in-out;
+
+        &:hover {
+            color: $blue;
+        }
+
+    }
+
+    &__prev-slide {
+        transform: translateY(-50%) rotate(180deg);
+        left: -2rem;
+    }
+
+    &__next-slide {
+        right: -2rem;
+    }
+}
+
+.stories__item {
+    overflow: hidden;
+    position: relative;
+
+    border-radius: 5px; // 5px in Figma
+    box-shadow: 0 5px 15px rgba($black, .2);
+    cursor: pointer;
+
+    &:after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 100%;
+
+        background-image: linear-gradient(
+            to bottom,
+            rgba($black, .8),
+            rgba($black, 0) 50%,
+            rgba($black, .8)
+        );
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+    }
+
+    &:hover {
+        .stories__preview {
+            transform: scale(1.3);
+            transition-duration: 5s;
+        }
+    }
+}
+
+.stories__preview {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    top: 0;
+    left: 0;
+    z-index: 1;
+
+    transform: scale(1.03);
+    transition: transform 1s ease-in-out;
+}
+
+.stories__title,
+.stories__date {
+    width: 100%;
+    padding: 1.4rem;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    color: $white;
+
+    position: absolute;
+    left: 0;
+    z-index: 3;
+
+}
+
+.stories__title {
+    top: 0;
+}
+
+.stories__date {
+    bottom: 0;
+    text-align: right;
+}
+
+
+
+
+
+
