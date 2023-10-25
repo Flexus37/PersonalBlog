@@ -1,42 +1,95 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useGetContentQuery, useCreateContentMutation } from '../../services/api/apiSlice';
 import { motion } from 'framer-motion';
 
 import AddStory from './add-story/AddStory';
 import './stories.scss';
 
-
 const Stories = () => {
+    const [storiesWidth, setStoriesWidth] = useState(0);
+    const [storiesOffset, setStoriesOffset] = useState(0);
+    const [storiesIndex, setStoriesIndex] = useState(0);
+    const [totalStoriesSlides, setTotalStoriesSlides] = useState(2);
+
+    const storiesWrapper = useRef(null);
+    const storiesInner = useRef(null);
+
+    useEffect(() => {
+        setStoriesWidth(storiesWrapper.current.offsetWidth);
+    }, [])
+
+    const onHandleClickNext = () => {
+        if (storiesIndex < totalStoriesSlides - 1) {
+            storiesInner.current.style.transform = `translateX(-${storiesOffset + storiesWidth + 20}px)`;
+            setStoriesIndex(index => index + 1);
+            setStoriesOffset(offset => offset + storiesWidth);
+        }
+
+    }
+
+    const onHandleClickPrev = () => {
+        if (storiesIndex > 0) {
+            storiesInner.current.style.transform = `translateX(${storiesOffset - storiesWidth}px)`;
+            setStoriesIndex(index => index - 1);
+            setStoriesOffset(offset => offset - storiesWidth);
+        }
+    }
 
     return (
         <div className="stories">
-            <button
-                className='stories__prev-slide'>
+            <button type='button'
+                className='stories__prev-slide'
+                onClick={onHandleClickPrev}>
                 <i className="fa-solid fa-chevron-right"></i>
             </button>
 
-            <AddStory/>
+            <div ref={storiesWrapper} className="stories__wrapper">
+                <div ref={storiesInner} className="stories__inner">
+                    <AddStory/>
 
-            <div className="stories__item" data-modal="story-modal">
-                <img className="stories__preview" src="/assets/images/stories/stories-2.jpg" alt=""/>
-                <div className="stories__title">Заканчиваю сложный проект</div>
-                <time className="stories__date" dateTime="2020-09-21 19:21">21.09.2020</time>
+                    <div className="stories__item" data-modal="story-modal">
+                        <img className="stories__preview" src="/assets/images/stories/stories-2.jpg" alt=""/>
+                        <div className="stories__title">Заканчиваю сложный проект</div>
+                        <time className="stories__date" dateTime="2020-09-21 19:21">21.09.2020</time>
+                    </div>
+
+                    <div className="stories__item" data-modal="story-modal">
+                        <img className="stories__preview"src="/assets/images/stories/stories-3.jpg" alt=""/>
+                        <div className="stories__title">Переехал в новую квартиру</div>
+                        <time className="stories__date" dateTime="2020-09-21 19:21">21.09.2020</time>
+                    </div>
+
+                    <div className="stories__item" data-modal="story-modal">
+                        <img className="stories__preview" src="/assets/images/stories/stories-4.jpg" alt=""/>
+                        <div className="stories__title">Осень пришла</div>
+                        <time className="stories__date" dateTime="2020-08-28 19:21">28.08.2020</time>
+                    </div>
+
+                    <div className="stories__item" data-modal="story-modal">
+                        <img className="stories__preview" src="/assets/images/stories/stories-4.jpg" alt=""/>
+                        <div className="stories__title">Осень пришла</div>
+                        <time className="stories__date" dateTime="2020-08-28 19:21">28.08.2020</time>
+                    </div>
+
+                    <div className="stories__item" data-modal="story-modal">
+                        <img className="stories__preview" src="/assets/images/stories/stories-4.jpg" alt=""/>
+                        <div className="stories__title">Осень пришла</div>
+                        <time className="stories__date" dateTime="2020-08-28 19:21">28.08.2020</time>
+                    </div>
+
+                    <div className="stories__item" data-modal="story-modal">
+                        <img className="stories__preview" src="/assets/images/stories/stories-4.jpg" alt=""/>
+                        <div className="stories__title">Осень пришла</div>
+                        <time className="stories__date" dateTime="2020-08-28 19:21">28.08.2020</time>
+                    </div>
+                </div>
             </div>
 
-            <div className="stories__item" data-modal="story-modal">
-                <img className="stories__preview"src="/assets/images/stories/stories-3.jpg" alt=""/>
-                <div className="stories__title">Переехал в новую квартиру</div>
-                <time className="stories__date" dateTime="2020-09-21 19:21">21.09.2020</time>
-            </div>
-
-            <div className="stories__item" data-modal="story-modal">
-                <img className="stories__preview" src="/assets/images/stories/stories-4.jpg" alt=""/>
-                <div className="stories__title">Осень пришла</div>
-                <time className="stories__date" dateTime="2020-08-28 19:21">28.08.2020</time>
-            </div>
 
             <button
-                className='stories__next-slide'>
+                type='button'
+                className='stories__next-slide'
+                onClick={onHandleClickNext}>
                 <i className="fa-solid fa-chevron-right"></i>
             </button>
 

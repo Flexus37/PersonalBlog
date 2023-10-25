@@ -5,6 +5,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 135px;
+
+    margin-right: 2rem;
 
     overflow: hidden;
     position: relative;
@@ -43,7 +46,7 @@
 
     &__title {
         display: block;
-        width: 80%;
+        width: 100%;
         margin: 0 auto;
 
         color: #D2D2D2;
