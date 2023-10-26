@@ -1,21 +1,21 @@
-import { useState, useMemo} from 'react';
+import { useState, useMemo, useRef} from 'react';
 import { useCreateContentMutation } from '../../services/api/apiSlice';
 import { Timestamp } from 'firebase/firestore';
 import { resizeFile } from '../../services/resize/resizeFile';
 import {ref as storageRef, uploadString, getDownloadURL} from 'firebase/storage';
 import { storage } from '../../services/firebase/FirestoreConfig';
 import { v4 as uuidv4 } from 'uuid';
-import { motion, AnimatePresence, color } from 'framer-motion';
+import { motion, AnimatePresence} from 'framer-motion';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
-import './add-post.scss';
+import './addContent.scss';
 
-import sendImg from '../../resources/img/add-post/add-submit.svg';
-import addFileImg from '../../resources/img/add-post/add-image.svg';
+import sendImg from '../../resources/img/add-content/add-submit.svg';
+import addFileImg from '../../resources/img/add-content/add-image.svg';
 
 const animatedComponents = makeAnimated();
 
@@ -78,7 +78,10 @@ const selectStyles = {
     }),
 }
 
-const AddPost = () => {
+// props:
+// type
+
+const AddContent = (props) => {
     const [description, setDescription] = useState('');
     const [article, setArticle] = useState('');
     const [tags, setTags] = useState([]);
@@ -87,21 +90,18 @@ const AddPost = () => {
 
     const [createContent, {isLoading, isError}] = useCreateContentMutation();
 
+    const textareaRefs = useRef([])
+
     function autoresizeTextarea() {
-        const textareas = document.querySelectorAll('[data-autoresize]');
-        textareas.forEach(textarea => {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
+        textareaRefs.current.forEach(textarea => {
+            if (textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            }
         });
     }
 
     autoresizeTextarea();
-
-    const onInputAutoResize = (textarea) => {
-        if (textarea.matches('[data-autoresize]')) {
-            autoresizeTextarea();
-        }
-    }
 
     const onHandleSubmit = async (e) => {
         e.preventDefault();
@@ -112,14 +112,14 @@ const AddPost = () => {
             return;
         }
 
-        let postImages = [];
+        let contentImages = [];
 
         if (imageArr.length > 0) {
-            postImages = await Promise.all(
+            contentImages = await Promise.all(
                 imageArr.map(async item => {
 
                     const snapshotImg = await uploadString(
-                        storageRef(storage, `users/1/posts/${item.imageId}.jpg`),
+                        storageRef(storage, `users/1/${props.type}/${item.imageId}.jpg`),
                         item.imageFile,
                         'data_url'
                     );
@@ -133,16 +133,16 @@ const AddPost = () => {
             );
         }
 
-        const newPost = {
+        const newContent = {
             article,
             description,
             tags,
-            postImages,
+            contentImages,
             time: Timestamp.fromDate(new Date())
         }
 
         setIsPreLoading(false);
-        createContent({contentType: 'posts', content: newPost});
+        createContent({contentType: props.type, content: newContent});
 
         setDescription('');
         setArticle('');
@@ -203,7 +203,6 @@ const AddPost = () => {
     }
 
     const renderImagePreview = (arr = []) => {
-        console.log('Render image preview');
         if (arr.length === 0) {
             return null;
         }
@@ -212,7 +211,7 @@ const AddPost = () => {
             return (
                 <motion.div
                     key={item.imageId}
-                    className="add-post__image-preview-item"
+                    className="add-content__image-preview-item"
                         initial={{opacity: 0, scale: .7}}
                         animate={{opacity: 1, scale: 1}}
                         exit={{opacity: 0, scale: .6}}
@@ -231,7 +230,7 @@ const AddPost = () => {
     }, [imageArr]);
 
     return (
-        <div className="add-post">
+        <div className="add-content">
             {
                 isLoading || isPreLoading ?
                     <Spinner lottiestyle={{
@@ -242,45 +241,58 @@ const AddPost = () => {
                     }} />
                 : isError ?
                 <ErrorMessage/> : (
-                    <form className="add-post__form" action="/" method="POST" onSubmit={onHandleSubmit}>
-                        <div className='add-post__areas'>
+                    <form className="add-content__form" action="/" method="POST" onSubmit={onHandleSubmit}>
+                        <div className='add-content__areas'>
                             <textarea
-                                className="add-post__article"
+                                className="add-content__article"
                                 name="post-article"
+                                ref={el => (textareaRefs.current[0] = el)}
                                 placeholder="Заголовок"
                                 data-autoresize
                                 value={article}
                                 onChange={(e) => setArticle(e.target.value)}
-                                onInput={(e) => onInputAutoResize(e.target)} >
+                                onInput={autoresizeTextarea} >
                             </textarea>
-                            <textarea
-                                className="add-post__textarea"
-                                name="post-text"
-                                placeholder="Описание"
-                                data-autoresize
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                onInput={(e) => onInputAutoResize(e.target)}>
-                            </textarea>
-                            {/* <label htmlFor="tags">Тег:</label> */}
-                            <Select
-                                className='add-post__tags'
-                                placeholder='Выберите тег'
-                                closeMenuOnSelect={false}
-                                components={animatedComponents}
-                                isMulti
-                                options={tagsOptions}
-                                styles={selectStyles}
-                                onChange={(tags) => setTags(tags)}
-                            />
-                            <div className="add-post__image-preview">
+                            {
+                                props.type !== 'stories' ?
+                                (
+                                    <textarea
+                                        className="add-content__textarea"
+                                        name="post-text"
+                                        ref={el => (textareaRefs.current[1] = el)}
+                                        placeholder="Описание"
+                                        data-autoresize
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        onInput={autoresizeTextarea}>
+                                    </textarea>
+                                )
+                                : null
+                            }
+                            {
+                                props.type !== 'stories' ?
+                                (
+                                    <Select
+                                        className='add-post__tags'
+                                        placeholder='Выберите тег'
+                                        closeMenuOnSelect={false}
+                                        components={animatedComponents}
+                                        isMulti
+                                        options={tagsOptions}
+                                        styles={selectStyles}
+                                        onChange={(tags) => setTags(tags)}
+                                    />
+                                )
+                                : null
+                            }
+                            <div className="add-content__image-preview">
                                 <AnimatePresence>
                                     {loadedImagesPreview}
                                 </AnimatePresence>
                             </div>
                         </div>
-                        <div className="add-post__form-actions">
-                            <label className="add-post__file" htmlFor="add-post-file">
+                        <div className="add-content__form-actions">
+                            <label className="add-content__file" htmlFor="add-content-file">
                                 <img src={addFileImg} alt="" />
                                 <input
                                     onChange={handleImageLoaded}
@@ -288,9 +300,9 @@ const AddPost = () => {
                                     type='file'
                                     multiple
                                     accept='image/*'
-                                    id="add-post-file" />
+                                    id="add-content-file" />
                             </label>
-                            <button className="add-post__send" type="submit">
+                            <button className="add-content__send" type="submit">
                                 <img src={sendImg} alt="" />
                             </button>
                         </div>
@@ -301,4 +313,4 @@ const AddPost = () => {
     );
 }
 
-export default AddPost;
+export default AddContent;

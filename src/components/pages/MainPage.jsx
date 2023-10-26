@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 
 import Stories from "../stories/Stories";
-import AddPost from "../addPost/AddPost";
+import AddContent from "../addContent/AddContent";
 import Posts from "../posts/Posts";
 // import Pagination from "../pagination/Pagination";
 
@@ -16,7 +16,7 @@ const MainPage = () => {
                 <title>Personal blog</title>
             </Helmet>
             <Stories/>
-            <AddPost/>
+            <AddContent type='posts'/>
             <Posts/>
             {/* <Pagination/> */}
         </>

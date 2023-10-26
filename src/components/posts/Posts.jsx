@@ -120,9 +120,9 @@ const Posts = () => {
         }
 
         const items = arr.map(item => {
-            const isPostImages = item.postImages.length > 0;
+            const isPostImages = item.contentImages.length > 0;
             const imageIdArr = isPostImages ?
-                item.postImages.map(item => {
+                item.contentImages.map(item => {
                     return item.imageId;
                 })
                 : [];
@@ -150,7 +150,7 @@ const Posts = () => {
                                 <i onClick={() => onHandleDelete(item.id, imageIdArr)} className="fa-solid fa-xmark"></i>
                                 {
                                     isPostImages ?
-                                    renderPostImages(item.postImages)
+                                    renderPostImages(item.contentImages)
                                     : null
                                 }
                                 <div className="post__content">
@@ -187,7 +187,7 @@ const Posts = () => {
                                 <i onClick={() => onHandleDelete(item.id, imageIdArr)} className="fa-solid fa-xmark"></i>
                                 {
                                     isPostImages ?
-                                    renderPostImages(item.postImages)
+                                    renderPostImages(item.contentImages)
                                     : null
                                 }
                                 <div className="post__content">
