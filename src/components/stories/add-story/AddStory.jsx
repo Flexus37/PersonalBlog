@@ -1,10 +1,9 @@
 import './addStory.scss'
 
-const AddStory = () => {
-
+const AddStory = ({renderAddContent}) => {
 
     return (
-        <div className="add-story" data-modal="story-modal">
+        <div className="add-story" data-modal="story-modal" onClick={renderAddContent}>
             <div className='add-story__inner'>
                 <div className='add-story__btn'>
                     <i className="fa-solid fa-plus"></i>

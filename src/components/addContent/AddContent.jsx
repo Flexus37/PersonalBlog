@@ -241,72 +241,75 @@ const AddContent = (props) => {
                     }} />
                 : isError ?
                 <ErrorMessage/> : (
-                    <form className="add-content__form" action="/" method="POST" onSubmit={onHandleSubmit}>
-                        <div className='add-content__areas'>
-                            <textarea
-                                className="add-content__article"
-                                name="post-article"
-                                ref={el => (textareaRefs.current[0] = el)}
-                                placeholder="Заголовок"
-                                data-autoresize
-                                value={article}
-                                onChange={(e) => setArticle(e.target.value)}
-                                onInput={autoresizeTextarea} >
-                            </textarea>
-                            {
-                                props.type !== 'stories' ?
-                                (
-                                    <textarea
-                                        className="add-content__textarea"
-                                        name="post-text"
-                                        ref={el => (textareaRefs.current[1] = el)}
-                                        placeholder="Описание"
-                                        data-autoresize
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        onInput={autoresizeTextarea}>
-                                    </textarea>
-                                )
-                                : null
-                            }
-                            {
-                                props.type !== 'stories' ?
-                                (
-                                    <Select
-                                        className='add-post__tags'
-                                        placeholder='Выберите тег'
-                                        closeMenuOnSelect={false}
-                                        components={animatedComponents}
-                                        isMulti
-                                        options={tagsOptions}
-                                        styles={selectStyles}
-                                        onChange={(tags) => setTags(tags)}
-                                    />
-                                )
-                                : null
-                            }
-                            <div className="add-content__image-preview">
-                                <AnimatePresence>
-                                    {loadedImagesPreview}
-                                </AnimatePresence>
+                    <>
+                        {/* <h2 className='add-content__title'>Новый пост</h2> */}
+                        <form className="add-content__form" action="/" method="POST" onSubmit={onHandleSubmit}>
+                            <div className='add-content__areas'>
+                                <textarea
+                                    className="add-content__article"
+                                    name="post-article"
+                                    ref={el => (textareaRefs.current[0] = el)}
+                                    placeholder="Заголовок"
+                                    data-autoresize
+                                    value={article}
+                                    onChange={(e) => setArticle(e.target.value)}
+                                    onInput={autoresizeTextarea} >
+                                </textarea>
+                                {
+                                    props.type !== 'stories' ?
+                                    (
+                                        <textarea
+                                            className="add-content__textarea"
+                                            name="post-text"
+                                            ref={el => (textareaRefs.current[1] = el)}
+                                            placeholder="Описание"
+                                            data-autoresize
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)}
+                                            onInput={autoresizeTextarea}>
+                                        </textarea>
+                                    )
+                                    : null
+                                }
+                                {
+                                    props.type !== 'stories' ?
+                                    (
+                                        <Select
+                                            className='add-post__tags'
+                                            placeholder='Выберите тег'
+                                            closeMenuOnSelect={false}
+                                            components={animatedComponents}
+                                            isMulti
+                                            options={tagsOptions}
+                                            styles={selectStyles}
+                                            onChange={(tags) => setTags(tags)}
+                                        />
+                                    )
+                                    : null
+                                }
+                                <div className="add-content__image-preview">
+                                    <AnimatePresence>
+                                        {loadedImagesPreview}
+                                    </AnimatePresence>
+                                </div>
                             </div>
-                        </div>
-                        <div className="add-content__form-actions">
-                            <label className="add-content__file" htmlFor="add-content-file">
-                                <img src={addFileImg} alt="" />
-                                <input
-                                    onChange={handleImageLoaded}
-                                    name='file'
-                                    type='file'
-                                    multiple
-                                    accept='image/*'
-                                    id="add-content-file" />
-                            </label>
-                            <button className="add-content__send" type="submit">
-                                <img src={sendImg} alt="" />
-                            </button>
-                        </div>
-                    </form>
+                            <div className="add-content__form-actions">
+                                <label className="add-content__file" htmlFor="add-content-file">
+                                    <img src={addFileImg} alt="" />
+                                    <input
+                                        onChange={handleImageLoaded}
+                                        name='file'
+                                        type='file'
+                                        multiple
+                                        accept='image/*'
+                                        id="add-content-file" />
+                                </label>
+                                <button className="add-content__send" type="submit">
+                                    <img src={sendImg} alt="" />
+                                </button>
+                            </div>
+                        </form>
+                    </>
                 )
             }
         </div>

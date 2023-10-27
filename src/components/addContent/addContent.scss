@@ -13,6 +13,20 @@
         padding: 1.5rem;
     }
 
+    // &__title {
+    //     margin-bottom: 1rem;
+
+    //     color: #797979;
+    //     text-decoration: underline $blue;
+    // }
+
+    &-story {
+        ::before {
+            content: '';
+            display: block;
+        }
+    }
+
     &__form {
         display: flex;
         align-items: flex-end;
