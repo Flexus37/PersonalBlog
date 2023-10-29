@@ -5,6 +5,9 @@
     padding: 1.5rem 2rem;
     margin-bottom: 3rem;
 
+    position: relative;
+    z-index: 5;
+
     background-color: $secondary;
     box-shadow: 0 15px 25px rgba($black, .45);
     border-radius: 5px;
@@ -21,9 +24,20 @@
     // }
 
     &-story {
-        ::before {
-            content: '';
+        &::before {
+            content: "";
             display: block;
+            width: 50px;
+            height: 50px;
+            background-color: #121212;
+            // box-shadow: 0 15px 25px rgba(0, 0, 0, 0.45);
+
+            position: absolute;
+            left: 4rem;
+            top: -1.2rem;
+            z-index: -1;
+            transform: rotate(45deg);
+            border-radius: 1rem;
         }
     }
 

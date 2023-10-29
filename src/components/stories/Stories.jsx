@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useGetContentQuery, useCreateContentMutation } from '../../services/api/apiSlice';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import AddStory from './add-story/AddStory';
 import AddContent from '../addContent/AddContent';
@@ -16,6 +16,12 @@ const Stories = () => {
 
     const storiesWrapper = useRef(null);
     const storiesInner = useRef(null);
+
+    const {
+        data: stories = [],
+        isLoading: isDataLoading,
+        isError: isDataError
+    } = useGetContentQuery({contentType: 'stories'});
 
     useEffect(() => {
         setStoriesWidth(storiesWrapper.current.offsetWidth);
@@ -101,7 +107,11 @@ const Stories = () => {
 
             </div>
 
-            {isAddContent ? <AddContent type='stories' /> : null}
+            {isAddContent ?
+            <AnimatePresence>
+                <AddContent type='stories' />
+            </AnimatePresence>
+             : null}
         </>
 
     );

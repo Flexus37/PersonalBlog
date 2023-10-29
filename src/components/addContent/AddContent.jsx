@@ -230,7 +230,13 @@ const AddContent = (props) => {
     }, [imageArr]);
 
     return (
-        <div className="add-content">
+        <motion.div
+            className={props.type === 'stories' ? 'add-content add-content-story' : 'add-content'}
+            initial={{opacity: 0, scale: .7}}
+            animate={{opacity: 1, scale: 1}}
+            exit={{opacity: 0, scale: .6}}
+            transition={{ease: "easeInOut", duration: .6}}
+        >
             {
                 isLoading || isPreLoading ?
                     <Spinner lottiestyle={{
@@ -312,7 +318,7 @@ const AddContent = (props) => {
                     </>
                 )
             }
-        </div>
+        </motion.div>
     );
 }
 

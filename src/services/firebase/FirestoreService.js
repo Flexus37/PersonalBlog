@@ -19,7 +19,15 @@ import { storage } from './FirestoreConfig';
 // }
 
 export async function getContent({contentType, contentLimit}) {
-    const q = query(collection(db, 'users', '1', contentType), orderBy('time', 'desc'), limit(contentLimit));
+    let q;
+
+    if (contentLimit) {
+        q = query(collection(db, 'users', '1', contentType), orderBy('time', 'desc'), limit(contentLimit));
+    } else {
+        q = query(collection(db, 'users', '1', contentType), orderBy('time', 'desc'));
+    }
+    // const q = query(collection(db, 'users', '1', contentType),
+    //     orderBy('time', 'desc'), contentLimit ? limit(contentLimit) : null);
     const docSnapshot = await getDocs(q);
     const docList = docSnapshot.docs.map(doc => {
         const data = doc.data();
