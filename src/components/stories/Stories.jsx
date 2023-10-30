@@ -12,7 +12,7 @@ const Stories = () => {
     const [storiesWidth, setStoriesWidth] = useState(0);
     const [storiesOffset, setStoriesOffset] = useState(0);
     const [storiesIndex, setStoriesIndex] = useState(0);
-    const [totalStoriesSlides, setTotalStoriesSlides] = useState(2);
+    const [totalStoriesSlides, setTotalStoriesSlides] = useState(1);
 
     const storiesWrapper = useRef(null);
     const storiesInner = useRef(null);
@@ -26,6 +26,10 @@ const Stories = () => {
     useEffect(() => {
         setStoriesWidth(storiesWrapper.current.offsetWidth);
     }, [])
+
+    useEffect(() => {
+        setTotalStoriesSlides(Math.ceil((stories.length + 1) / 4))
+    }, [stories])
 
     const onHandleClickNext = () => {
         if (storiesIndex < totalStoriesSlides - 1) {
@@ -44,16 +48,23 @@ const Stories = () => {
         }
     }
 
-    console.log(isAddContent);
-
     return (
         <>
             <div className="stories">
-                <button type='button'
+                <button
+                    type='button'
                     className='stories__prev-slide'
                     onClick={onHandleClickPrev}>
-                    <i className="fa-solid fa-chevron-right"></i>
+                        <i className="fa-solid fa-chevron-right"></i>
                 </button>
+
+                <button
+                    type='button'
+                    className='stories__next-slide'
+                    onClick={onHandleClickNext}>
+                        <i className="fa-solid fa-chevron-right"></i>
+                </button>
+
 
                 <div ref={storiesWrapper} className="stories__wrapper">
                     <div ref={storiesInner} className="stories__inner">
@@ -98,18 +109,11 @@ const Stories = () => {
                 </div>
 
 
-                <button
-                    type='button'
-                    className='stories__next-slide'
-                    onClick={onHandleClickNext}>
-                    <i className="fa-solid fa-chevron-right"></i>
-                </button>
-
             </div>
 
             {isAddContent ?
             <AnimatePresence>
-                <AddContent type='stories' />
+                <AddContent key='addStory' type='stories' />
             </AnimatePresence>
              : null}
         </>

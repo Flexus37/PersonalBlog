@@ -16,7 +16,7 @@ const MainPage = () => {
                 <title>Personal blog</title>
             </Helmet>
             <Stories/>
-            <AddContent type='posts'/>
+            <AddContent key='addPost' type='posts'/>
             <Posts/>
             {/* <Pagination/> */}
         </>

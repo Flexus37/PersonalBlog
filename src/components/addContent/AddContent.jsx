@@ -300,7 +300,7 @@ const AddContent = (props) => {
                                 </div>
                             </div>
                             <div className="add-content__form-actions">
-                                <label className="add-content__file" htmlFor="add-content-file">
+                                <label className="add-content__file" htmlFor={`add-content-${props.type}-file`}>
                                     <img src={addFileImg} alt="" />
                                     <input
                                         onChange={handleImageLoaded}
@@ -308,7 +308,7 @@ const AddContent = (props) => {
                                         type='file'
                                         multiple
                                         accept='image/*'
-                                        id="add-content-file" />
+                                        id={`add-content-${props.type}-file`} />
                                 </label>
                                 <button className="add-content__send" type="submit">
                                     <img src={sendImg} alt="" />
