@@ -76,6 +76,47 @@
                 transform: scale(1.3);
                 transition-duration: 5s;
             }
+
+            .fa-xmark {
+                opacity: 1;
+            }
+
+            .stories__item-delete {
+                opacity: 1;
+            }
+        }
+
+        &-delete {
+            display: block;
+            width: 2rem;
+            height: 2rem;
+
+            border-radius: 0 0 0 5px;
+            background-color: $primary;
+
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 10;
+
+            opacity: 0;
+            transition: opacity .2s ease-in-out, color .1s ease-in-out;
+        }
+
+        & .fa-xmark {
+            display: block;
+
+            font-size: 1.4rem;
+            line-height: 2rem;
+            text-align: center;
+            color: #D2D2D2;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity .2s ease-in-out, color .1s ease-in-out;
+
+            &:hover {
+                color: $blue;
+            }
         }
     }
 

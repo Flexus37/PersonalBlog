@@ -11,7 +11,7 @@ import EmptyMessage from '../emptyMessage/EmptyMessage';
 
 const Posts = () => {
 
-    const [deletingPostId, setDeletingPostId] = useState('');
+    // const [deletingPostId, setDeletingPostId] = useState('');
     const [isAnimationComplete, setIsAnimationComplete] = useState(true);
     const [postsLimit, setPostsLimit] = useState(10);
     const [docCount, setDocCount] = useState(null);
@@ -65,11 +65,11 @@ const Posts = () => {
     ] = useDeleteContentFilesMutation();
 
     const onHandleDelete = (postId, imageIdArr) => {
-        setDeletingPostId(postId);
+        // setDeletingPostId(postId);
         deleteContent({contentType: 'posts', id: postId});
         deleteContentFiles({contentType: 'posts', contentIdArr: imageIdArr});
 
-        setDeletingPostId('');
+        // setDeletingPostId('');
         setIsAnimationComplete(true);
     }
 
@@ -121,11 +121,11 @@ const Posts = () => {
 
         const items = arr.map(item => {
             const isPostImages = item.contentImages.length > 0;
-            const imageIdArr = isPostImages ?
-                item.contentImages.map(item => {
-                    return item.imageId;
-                })
-                : [];
+            // const imageIdArr = isPostImages ?
+            //     item.contentImages.map(item => {
+            //         return item.imageId;
+            //     })
+            //     : [];
 
             const tags = item.tags.map(tag => {
                 return tag.label;
@@ -147,7 +147,7 @@ const Posts = () => {
                         {
                             // isPostDeleting ? <Spinner/> :
                             <>
-                                <i onClick={() => onHandleDelete(item.id, imageIdArr)} className="fa-solid fa-xmark"></i>
+                                <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i>
                                 {
                                     isPostImages ?
                                     renderPostImages(item.contentImages)
@@ -184,7 +184,7 @@ const Posts = () => {
                         {
                             // isPostDeleting ? <Spinner/> :
                             <>
-                                <i onClick={() => onHandleDelete(item.id, imageIdArr)} className="fa-solid fa-xmark"></i>
+                                <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i>
                                 {
                                     isPostImages ?
                                     renderPostImages(item.contentImages)

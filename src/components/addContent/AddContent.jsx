@@ -108,7 +108,8 @@ const AddContent = (props) => {
 
         setIsPreLoading(true);
 
-        if (!article && !description && imageArr.length === 0) {
+        if ((!article && !description && imageArr.length === 0) ||
+            (props.type === 'stories' && (!article || imageArr.length === 0))) {
             return;
         }
 
@@ -133,12 +134,22 @@ const AddContent = (props) => {
             );
         }
 
-        const newContent = {
-            article,
-            description,
-            tags,
-            contentImages,
-            time: Timestamp.fromDate(new Date())
+        let newContent = {};
+
+        if (props.type === 'stories') {
+            newContent = {
+                article,
+                contentImages,
+                time: Timestamp.fromDate(new Date())
+            }
+        } else {
+            newContent = {
+                article,
+                description,
+                tags,
+                contentImages,
+                time: Timestamp.fromDate(new Date())
+            }
         }
 
         setIsPreLoading(false);

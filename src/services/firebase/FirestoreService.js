@@ -75,10 +75,10 @@ export async function deleteContent({contentType, id}) {
     return id;
 }
 
-export async function deleteContentFiles({contentType, contentIdArr}) {
-    if (contentIdArr.length > 0) {
-        contentIdArr.forEach(id => {
-            const contentRef = storageRef(storage, `users/1/${contentType}/${id}.jpg`);
+export async function deleteContentFiles({contentType, contentArr}) {
+    if (contentArr.length > 0) {
+        contentArr.forEach(item => {
+            const contentRef = storageRef(storage, `users/1/${contentType}/${item.imageId}.jpg`);
             deleteObject(contentRef)
             .then(() => {
                 console.log('Deleting successfully!')
@@ -89,7 +89,7 @@ export async function deleteContentFiles({contentType, contentIdArr}) {
             })
         })
     }
-    return contentIdArr;
+    return contentArr;
 }
 
 export async function getDocCount(contentType = '') {
