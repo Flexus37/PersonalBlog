@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useGetContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation} from '../../services/api/apiSlice';
+import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation} from '../../services/api/apiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getDocCount } from '../../services/firebase/FirestoreService';
 
@@ -23,7 +23,7 @@ const Posts = () => {
         data: posts = [],
         isLoading: isDataLoading,
         isError: isDataError
-    } = useGetContentQuery({contentType: 'posts', contentLimit: postsLimit});
+    } = useGetAllContentQuery({contentType: 'posts', contentLimit: postsLimit});
 
     useEffect(() => {
         async function fetchData() {

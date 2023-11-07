@@ -4,8 +4,8 @@
 @import '../../style/blocks/social.scss';
 
 .modal {
-    //display: flex;
-    display: none;
+    display: flex;
+    // display: none;
     justify-content: center;
     flex-direction: column;
     align-items: center;
@@ -49,6 +49,7 @@
     &--story {
         padding: 0;
         background: none;
+        // background-color: $primary;
     }
 }
 

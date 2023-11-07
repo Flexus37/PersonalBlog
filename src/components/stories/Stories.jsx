@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { useGetContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation } from '../../services/api/apiSlice';
+import { createPortal } from 'react-dom';
+import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation } from '../../services/api/apiSlice';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import AddStory from './add-story/AddStory';
 import AddContent from '../addContent/AddContent';
+import StoryModal from '../modals/StoryModal';
+
 import './stories.scss';
 
 const Stories = () => {
@@ -14,6 +17,9 @@ const Stories = () => {
     const [storiesIndex, setStoriesIndex] = useState(0);
     const [totalStoriesSlides, setTotalStoriesSlides] = useState(1);
 
+    const [showModal, setShowModal] = useState(false);
+    const [modalStoryId, setModalStoryId] = useState(null);
+
     const storiesWrapper = useRef(null);
     const storiesInner = useRef(null);
 
@@ -21,7 +27,7 @@ const Stories = () => {
         data: stories = [],
         isLoading: isContentLoading,
         isError: isContentError
-    } = useGetContentQuery({contentType: 'stories'});
+    } = useGetAllContentQuery({contentType: 'stories'});
 
     const [
         deleteContent,
@@ -65,19 +71,24 @@ const Stories = () => {
 
     const onHandleClickNext = () => {
         if (storiesIndex < totalStoriesSlides - 1) {
-            storiesInner.current.style.transform = `translateX(-${storiesOffset + storiesWidth + 20}px)`;
+            storiesInner.current.style.transform = `translateX(${storiesOffset - storiesWidth - 20}px)`;
             setStoriesIndex(index => index + 1);
-            setStoriesOffset(offset => offset + storiesWidth);
+            setStoriesOffset(offset => offset - storiesWidth - 20);
         }
 
     }
 
     const onHandleClickPrev = () => {
         if (storiesIndex > 0) {
-            storiesInner.current.style.transform = `translateX(${storiesOffset - storiesWidth}px)`;
+            storiesInner.current.style.transform = `translateX(${storiesOffset + storiesWidth + 20}px)`;
             setStoriesIndex(index => index - 1);
-            setStoriesOffset(offset => offset - storiesWidth);
+            setStoriesOffset(offset => offset + storiesWidth + 20);
         }
+    }
+
+    const onHandleShowModal = (id) => {
+        setShowModal(true);
+        setModalStoryId(id);
     }
 
     const renderStories = (arr) => {
@@ -91,6 +102,7 @@ const Stories = () => {
                     animate={{opacity: 1, scale: 1}}
                     exit={{opacity: 0, scale: .6}}
                     transition={{ease: "easeInOut", duration: .6}}
+                    onClick={() => onHandleShowModal(item.id)}
                     >
                     <div
                     className="stories__item-delete"
@@ -130,7 +142,7 @@ const Stories = () => {
 
                 <div ref={storiesWrapper} className="stories__wrapper">
                     <div ref={storiesInner} className="stories__inner">
-                        <AddStory renderAddContent={() => setIsAddContent(true)} />
+                        <AddStory renderAddContent={() => setIsAddContent(isAddContent => !isAddContent)} />
                         <AnimatePresence>
                             {elements}
                         </AnimatePresence>
@@ -145,9 +157,19 @@ const Stories = () => {
                 <AddContent key='addStory' type='stories' />
             </AnimatePresence>
              : null}
+
+            {
+                showModal ? createPortal(<StoryModal storyId={modalStoryId} closeModal={() => setShowModal(false)} />, document.body) : null
+            }
         </>
 
     );
 }
+
+// const Portal = (props) => {
+//     // document.body.appendChild(props.children);
+
+//     return createPortal(props.children, document.body);
+// }
 
 export default Stories;
