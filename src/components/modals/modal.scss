@@ -23,6 +23,13 @@
     &.show {
         display: flex;
     }
+
+    &__wrapper {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        width: 300%;
+    }
 }
 
 .modal__content {
@@ -34,7 +41,7 @@
     background-color: $primary;
     border-radius: 5px;
 
-    opacity: 0;
+    opacity: 1;
     transform: translateY(-50px);
     transition: transform 200ms ease-in-out, opacity 200ms linear;
 
@@ -49,7 +56,15 @@
     &--story {
         padding: 0;
         background: none;
-        // background-color: $primary;
+        background-color: $primary;
+        height: 60rem;
+        overflow: hidden;
+    }
+
+    &-item {
+        position: relative;
+        max-width: 50rem;
+        width: 100%;
     }
 }
 
@@ -97,6 +112,8 @@
 .modal__video {
     display: block;
     margin: 0 auto;
+    width: 100%;
+    object-fit:contain;
 }
 
 

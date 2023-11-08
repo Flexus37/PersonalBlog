@@ -86,24 +86,27 @@ const Stories = () => {
         }
     }
 
-    const onHandleShowModal = (id) => {
-        setShowModal(true);
-        setModalStoryId(id);
+    const onHandleShowModal = (e, id) => {
+        if (e.target.className !== 'fa-solid fa-xmark') {
+            setShowModal(true);
+            setModalStoryId(id);
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     const renderStories = (arr) => {
         const items = arr.map(item => {
             return (
                 <motion.div
-                    key={item.id}
-                    className="stories__item"
-                    data-modal="story-modal"
-                    initial={{opacity: 0, scale: .7}}
-                    animate={{opacity: 1, scale: 1}}
-                    exit={{opacity: 0, scale: .6}}
-                    transition={{ease: "easeInOut", duration: .6}}
-                    onClick={() => onHandleShowModal(item.id)}
-                    >
+                key={item.id}
+                className="stories__item"
+                data-modal="story-modal"
+                initial={{opacity: 0, scale: .7}}
+                animate={{opacity: 1, scale: 1}}
+                exit={{opacity: 0, scale: .6}}
+                transition={{ease: "easeInOut", duration: .6}}
+                onClick={(e) => onHandleShowModal(e, item.id)}
+                >
                     <div
                     className="stories__item-delete"
                     onClick={() => onHandleDelete(item.id, item.contentImages)}

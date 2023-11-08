@@ -40,7 +40,7 @@
         display: inline-block;
         overflow: hidden;
         position: relative;
-        width: 135px;
+        min-width: 135px;
 
         margin-right: 2rem;
 
@@ -136,10 +136,10 @@
         transform: translateY(-50%);
 
         color: #fff;
-        transition: color .2s ease-in-out;
+        transition: background-color .2s ease-in-out;
 
         &:hover {
-            color: $blue;
+            background-color: $blue;
         }
 
     }
