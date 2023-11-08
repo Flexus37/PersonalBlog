@@ -39,28 +39,38 @@ const StoryModal = ({closeModal, storyId}) => {
         const items = story.contentImages.map(item => {
             return (
             <div key={item.imageId} className="modal__content-item">
-                <img className='modal__video' src={item.imageUrl} alt={story.article} />
+                <img className='modal__content-file' src={item.imageUrl} alt={story.article} />
             </div>
             )
         });
 
         return (
-            <div className="modal__wrapper">
+            <div className="modal__inner">
                 {items}
             </div>
         )
-
-        // return story.contentImages.map(item => {
-        //     return (
-        //         <img key={item.imageId} src={item.imageUrl} alt={story.article} />
-        //     )
-        // })
     }
 
     return (
         <div className="modal" id="story-modal" onClick={(e) => onHandleCloseModal(e.target)}>
             <div className="modal__content modal__content--story">
-                {renderStoryContent()}
+                <button
+                    type='button'
+                    className='modal__prev-slide'
+                    // onClick={onHandleClickPrev}
+                >
+                    <i className="fa-solid fa-chevron-right"></i>
+                </button>
+                <div className="modal__wrapper">
+                    {renderStoryContent()}
+                </div>
+                <button
+                    type='button'
+                    className='modal__next-slide'
+                    // onClick={onHandleClickNext}
+                >
+                    <i className="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
         </div>
         /* <video className="modal__video" src="" poster="https://via.placeholder.com/420x580"></video> */
