@@ -46,6 +46,12 @@
             background: none;
             background-color: $primary;
             height: 60rem;
+            // height: auto;
+
+            // Тестовые стили
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         &-item {

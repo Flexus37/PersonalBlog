@@ -124,24 +124,42 @@ const Stories = () => {
     }
 
     const elements = renderStories(stories);
+    console.log(storiesIndex);
 
     return (
         <>
             <div className="stories">
-                <button
-                    type='button'
-                    className='stories__prev-slide'
-                    onClick={onHandleClickPrev}>
-                        <i className="fa-solid fa-chevron-right"></i>
-                </button>
 
-                <button
-                    type='button'
-                    className='stories__next-slide'
-                    onClick={onHandleClickNext}>
-                        <i className="fa-solid fa-chevron-right"></i>
-                </button>
+                <AnimatePresence>
+                    {/* Не работает, починить! */}
+                    {storiesIndex < totalStoriesSlides ? (
+                        <motion.button
+                            type='button'
+                            key='stories__next-slide'
+                            className='stories__next-slide'
+                            initial={{opacity: 0}}
+                            animate={{opacity: 1}}
+                            exit={{opacity: 0}}
+                            transition={{ease: "easeInOut", duration: .3}}
+                            onClick={onHandleClickNext}>
+                                <i className="fa-solid fa-chevron-right"></i>
+                        </motion.button>
+                    ): null}
 
+                    {storiesIndex !== 0 ? (
+                        <motion.button
+                            type='button'
+                            key='stories__prev-slide'
+                            className='stories__prev-slide'
+                            initial={{opacity: 0}}
+                            animate={{opacity: 1}}
+                            exit={{opacity: 0}}
+                            transition={{ease: "easeInOut", duration: .3}}
+                            onClick={onHandleClickPrev}>
+                                <i className="fa-solid fa-chevron-right"></i>
+                        </motion.button>
+                    ): null}
+                </AnimatePresence>
 
                 <div ref={storiesWrapper} className="stories__wrapper">
                     <div ref={storiesInner} className="stories__inner">

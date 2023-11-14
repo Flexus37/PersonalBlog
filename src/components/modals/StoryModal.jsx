@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGetContentQuery } from '../../services/api/apiSlice';
 
 import Spinner from '../spinner/Spinner';
@@ -8,7 +8,14 @@ import './modal.scss'
 
 
 const StoryModal = ({closeModal, storyId}) => {
-    const [storyContentIndex, setStoryContentIndex] = useState(0)
+
+    const [storiesWidth, setStoriesWidth] = useState(0);
+    const [storiesOffset, setStoriesOffset] = useState(0);
+    const [storiesIndex, setStoriesIndex] = useState(0);
+    const [totalStoriesSlides, setTotalStoriesSlides] = useState(1);
+
+    const storiesWrapper = useRef(null);
+    const storiesInner = useRef(null);
 
     const {
         data: story,
@@ -16,10 +23,47 @@ const StoryModal = ({closeModal, storyId}) => {
         isError
     } = useGetContentQuery({contentType: 'stories', contentId: storyId})
 
+    useEffect(() => {
+        setStoriesWidth(storiesWrapper.current.offsetWidth);
+    }, []);
+
+    useEffect(() => {
+        if (typeof story === 'undefined') {
+            return;
+        }
+
+        const slides = Math.ceil(story.contentImages.length);
+
+        setTotalStoriesSlides(prevSlides => {
+            if (prevSlides !== slides) {
+                storiesInner.current.style.width = `${slides}00%`;
+            }
+            return slides;
+        });
+
+    }, [story]);
+
     const onHandleCloseModal = (element) => {
         if (element.className === 'modal') {
             closeModal();
             document.body.style.overflow = 'auto';
+        }
+    }
+
+    const onHandleClickNext = () => {
+        if (storiesIndex < totalStoriesSlides - 1) {
+            storiesInner.current.style.transform = `translateX(${storiesOffset - storiesWidth}px)`;
+            setStoriesIndex(index => index + 1);
+            setStoriesOffset(offset => offset - storiesWidth);
+        }
+
+    }
+
+    const onHandleClickPrev = () => {
+        if (storiesIndex > 0) {
+            storiesInner.current.style.transform = `translateX(${storiesOffset + storiesWidth}px)`;
+            setStoriesIndex(index => index - 1);
+            setStoriesOffset(offset => offset + storiesWidth);
         }
     }
 
@@ -45,7 +89,7 @@ const StoryModal = ({closeModal, storyId}) => {
         });
 
         return (
-            <div className="modal__inner">
+            <div ref={storiesInner} className="modal__inner">
                 {items}
             </div>
         )
@@ -57,17 +101,17 @@ const StoryModal = ({closeModal, storyId}) => {
                 <button
                     type='button'
                     className='modal__prev-slide'
-                    // onClick={onHandleClickPrev}
+                    onClick={onHandleClickPrev}
                 >
                     <i className="fa-solid fa-chevron-right"></i>
                 </button>
-                <div className="modal__wrapper">
+                <div ref={storiesWrapper} className="modal__wrapper">
                     {renderStoryContent()}
                 </div>
                 <button
                     type='button'
                     className='modal__next-slide'
-                    // onClick={onHandleClickNext}
+                    onClick={onHandleClickNext}
                 >
                     <i className="fa-solid fa-chevron-right"></i>
                 </button>
