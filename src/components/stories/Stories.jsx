@@ -124,7 +124,6 @@ const Stories = () => {
     }
 
     const elements = renderStories(stories);
-    console.log(storiesIndex);
 
     return (
         <>
@@ -132,7 +131,7 @@ const Stories = () => {
 
                 <AnimatePresence>
                     {/* Не работает, починить! */}
-                    {storiesIndex < totalStoriesSlides ? (
+                    {storiesIndex < totalStoriesSlides - 1 ? (
                         <motion.button
                             type='button'
                             key='stories__next-slide'

@@ -1,4 +1,8 @@
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+
+import ContactModal from '../modals/ContactModal';
 
 import './sidebar.scss';
 
@@ -9,9 +13,23 @@ import vk from '../../resources/img/vk.svg';
 import pinterest from '../../resources/img/pinterest.svg';
 
 const Sidebar = () => {
+    const [showModal, setShowModal] = useState(false);
+
+    const onHandleShowModal = () => {
+        setShowModal(true);
+        document.body.style.overflow = 'hidden';
+    }
 
     return (
         <aside className="sidebar" id="sidebar">
+            {
+                showModal ?
+                createPortal(
+                    <ContactModal closeModal={() => setShowModal(false)} />,
+                    document.body
+                ) :
+                null
+            }
             <div className="sidebar__header">
                 <img src={sidebarHeader} alt=""/>
             </div>
@@ -87,7 +105,11 @@ const Sidebar = () => {
             <div className="sidebar__footer">
                 {/* <a className="btn btn--red" href="/works.html">Мои работы</a> */}
                 <Link className="btn btn--red" to='/works'>Мои работы</Link>
-                <button className="btn btn--blue" type="button" data-modal="contact-modal">Написать мне</button>
+                <button
+                    className="btn btn--blue"
+                    type="button"
+                    data-modal="contact-modal"
+                    onClick={onHandleShowModal}>Написать мне</button>
             </div>
         </aside>
     );

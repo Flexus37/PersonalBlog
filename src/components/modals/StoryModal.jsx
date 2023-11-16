@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useGetContentQuery } from '../../services/api/apiSlice';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -68,8 +69,9 @@ const StoryModal = ({closeModal, storyId}) => {
     }
 
     const renderStoryContent = () => {
+
         if (isLoading) {
-            return <Spinner />
+            return <Spinner lottiestyle={{'width': '100%', 'height': '100%'}} />
         }
 
         if (isError) {
@@ -96,7 +98,14 @@ const StoryModal = ({closeModal, storyId}) => {
     }
 
     return (
-        <div className="modal" id="story-modal" onClick={(e) => onHandleCloseModal(e.target)}>
+        <motion.div
+            className="modal"
+            id="story-modal"
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            transition={{ease: 'easeInOut', duration: 0.2}}
+            onClick={(e) => onHandleCloseModal(e.target)}
+            >
             <div className="modal__content modal__content--story">
                 <button
                     type='button'
@@ -116,7 +125,7 @@ const StoryModal = ({closeModal, storyId}) => {
                     <i className="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
-        </div>
+        </motion.div>
         /* <video className="modal__video" src="" poster="https://via.placeholder.com/420x580"></video> */
     );
 

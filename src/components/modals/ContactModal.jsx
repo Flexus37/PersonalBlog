@@ -1,9 +1,17 @@
 import './modal.scss';
 
-const ContactModal = () => {
+const ContactModal = ({closeModal}) => {
+
+
+    const onHandleCloseModal = (element) => {
+        if (element.className === 'modal') {
+            closeModal();
+            document.body.style.overflow = 'auto';
+        }
+    }
 
     return (
-        <div className="modal" id="contact-modal">
+        <div onClick={(e) => onHandleCloseModal(e.target)} className="modal" id="contact-modal">
             <div className="modal__content modal__content--contact">
                 <form className="form" action="/" method="POST">
 
