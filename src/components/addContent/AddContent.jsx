@@ -26,6 +26,23 @@ const tagsOptions = [
     { value: 'chill', label: 'отдых' }
 ];
 
+const tagsWorkOptions = [
+    { value: 'web', label: 'Web' },
+    { value: 'js', label: 'JavaScript' },
+    { value: 'ts', label: 'TypeScript' },
+    { value: 'html', label: 'HTML' },
+    { value: 'css', label: 'CSS' },
+    { value: 'scss', label: 'Sass' },
+    { value: 'react', label: 'React' },
+    { value: 'redux', label: 'Redux' },
+    { value: 'rtkquery', label: 'RTK Query' },
+    { value: 'nextjs', label: 'NextJS' },
+    { value: 'firebase', label: 'Firebase' },
+    { value: 'reduxtoolkit', label: 'Redux Toolkit' },
+    { value: 'nodejs', label: 'NodeJS' },
+    { value: 'angular', label: 'Angular' },
+];
+
 const selectStyles = {
     control: (styles, state) => ({
         ...styles,
@@ -84,6 +101,8 @@ const selectStyles = {
 const AddContent = (props) => {
     const [description, setDescription] = useState('');
     const [article, setArticle] = useState('');
+    const [link, setLink] = useState('');
+    const [gitHubLink, setGitHubLink] = useState('');
     const [tags, setTags] = useState([]);
     const [imageArr, setImageArr] = useState([]);
     const [isPreLoading, setIsPreLoading] = useState(false);
@@ -142,7 +161,19 @@ const AddContent = (props) => {
                 contentImages,
                 time: Timestamp.fromDate(new Date())
             }
-        } else {
+        }
+        else if (props.type === 'works') {
+            newContent = {
+                article,
+                description,
+                link,
+                gitHubLink,
+                tags,
+                contentImages,
+                time: Timestamp.fromDate(new Date())
+            }
+        }
+        else {
             newContent = {
                 article,
                 description,
@@ -157,6 +188,8 @@ const AddContent = (props) => {
 
         setDescription('');
         setArticle('');
+        setLink('');
+        setGitHubLink('');
         setImageArr([]);
     }
 
@@ -216,6 +249,20 @@ const AddContent = (props) => {
     const renderImagePreview = (arr = []) => {
         if (arr.length === 0) {
             return null;
+        } else if (props.type === 'works') {
+            return (
+                <motion.div
+                    key={arr[0].imageId}
+                    className="add-content__image-preview-item story"
+                        initial={{opacity: 0, scale: .7}}
+                        animate={{opacity: 1, scale: 1}}
+                        exit={{opacity: 0, scale: .6}}
+                        transition={{ease: "easeInOut", duration: .3}}
+                    >
+                    <i onClick={() => deleteImagePreview(arr[0].imageId)} className="fa-solid fa-xmark"></i>
+                    <img src={arr[0].imageFile} alt="Загруженная картинка" />
+                </motion.div>
+            )
         }
 
        return arr.map(item => {
@@ -259,7 +306,6 @@ const AddContent = (props) => {
                 : isError ?
                 <ErrorMessage/> : (
                     <>
-                        {/* <h2 className='add-content__title'>Новый пост</h2> */}
                         <form className="add-content__form" action="/" method="POST" onSubmit={onHandleSubmit}>
                             <div className='add-content__areas'>
                                 <textarea
@@ -277,7 +323,7 @@ const AddContent = (props) => {
                                     (
                                         <textarea
                                             className="add-content__textarea"
-                                            name="post-text"
+                                            name="post-description"
                                             ref={el => (textareaRefs.current[1] = el)}
                                             placeholder="Описание"
                                             data-autoresize
@@ -289,6 +335,38 @@ const AddContent = (props) => {
                                     : null
                                 }
                                 {
+                                   props.type === 'works' ?
+                                   (
+                                       <textarea
+                                           className="add-content__textarea"
+                                           name="work-link"
+                                           ref={el => (textareaRefs.current[2] = el)}
+                                           placeholder="Ссылка на сайт"
+                                           data-autoresize
+                                           value={description}
+                                           onChange={(e) => setLink(e.target.value)}
+                                           onInput={autoresizeTextarea}>
+                                       </textarea>
+                                   )
+                                   : null
+                                }
+                                {
+                                   props.type === 'works' ?
+                                   (
+                                       <textarea
+                                           className="add-content__textarea"
+                                           name="work-link"
+                                           ref={el => (textareaRefs.current[2] = el)}
+                                           placeholder="Ссылка на GitHub"
+                                           data-autoresize
+                                           value={description}
+                                           onChange={(e) => setGitHubLink(e.target.value)}
+                                           onInput={autoresizeTextarea}>
+                                       </textarea>
+                                   )
+                                   : null
+                                }
+                                {
                                     props.type !== 'stories' ?
                                     (
                                         <Select
@@ -297,7 +375,7 @@ const AddContent = (props) => {
                                             closeMenuOnSelect={false}
                                             components={animatedComponents}
                                             isMulti
-                                            options={tagsOptions}
+                                            options={props.type === 'works' ? tagsWorkOptions : tagsOptions}
                                             styles={selectStyles}
                                             onChange={(tags) => setTags(tags)}
                                         />

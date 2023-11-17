@@ -1,63 +1,179 @@
+import { useCallback, useEffect, useState } from 'react';
+import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation} from '../../services/api/apiSlice';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getDocCount } from '../../services/firebase/FirestoreService';
+
+import AddContent from '../addContent/AddContent';
+import Spinner from '../spinner/Spinner';
+import ErrorMessage from '../errorMessage/ErrorMessage';
+import EmptyMessage from '../emptyMessage/EmptyMessage';
+
 import './work.scss';
 
 const Works = () => {
+    const [isAnimationComplete, setIsAnimationComplete] = useState(true);
+    const [worksLimit, setWorksLimit] = useState(10);
+    const [docCount, setDocCount] = useState(null);
+    const [worksEnded, setWorksEnded] = useState(false);
+    const [showEmptyMessage, setShowEmptyMessage] = useState(true);
+
+    const {
+        data: works = [],
+        isLoading: isDataLoading,
+        isError: isDataError
+    } = useGetAllContentQuery({contentType: 'works', contentLimit: worksLimit});
+
+    useEffect(() => {
+        async function fetchData() {
+            const count = await getDocCount('works');
+            setDocCount(count);
+        }
+
+        fetchData();
+
+        if (works.length === docCount) {
+            setWorksEnded(true);
+        } else {
+            setWorksEnded(false);
+        }
+
+    }, [isAnimationComplete, docCount]);
+
+
+    // useEffect(() => {
+    //     console.log(posts.length, docCount);
+
+    // }, [docCount])
+
+    const [
+        deleteContent,
+        {
+            isLoading: isDeleting,
+            isError: isDeletingError,
+            isSuccess: isDeletingSuccess
+        }
+    ] = useDeleteContentMutation();
+
+    const [
+        deleteContentFiles,
+        {
+            isLoading: isDeletingImages,
+            isError: isDeletingImagesError
+        }
+    ] = useDeleteContentFilesMutation();
+
+    const onHandleDelete = (workId, imageIdArr) => {
+        // setDeletingPostId(postId);
+        deleteContent({contentType: 'works', id: workId});
+        deleteContentFiles({contentType: 'works', contentIdArr: imageIdArr});
+
+        // setDeletingPostId('');
+        setIsAnimationComplete(true);
+    }
+
+    const onHandleLoadMore = () => {
+        if (worksLimit + 10 >= docCount) {
+            setWorksLimit(docCount);
+            setWorksEnded(true);
+            return;
+        }
+
+        setWorksEnded(false);
+        setWorksLimit(limit => limit + 10);
+
+    }
+
+    const renderWorks = (arr) => {
+        if (isDataLoading) {
+            return <Spinner/>
+        }
+
+        if (isDataError) {
+            return <ErrorMessage/>
+        }
+
+        if (arr.length === 0 && isAnimationComplete) {
+            return <EmptyMessage type='works' />;
+        }
+
+        const items = arr.map(item => {
+            return (
+                <motion.article
+                    key={item.id}
+                    className="work"
+                    initial={{opacity: 0, scale: .7}}
+                    animate={{opacity: 1, scale: 1}}
+                    exit={{opacity: 0, scale: .6}}
+                    transition={{ease: "easeInOut", duration: .6}}
+                    onAnimationStart={() => setIsAnimationComplete(false)}
+                    onAnimationComplete={() => setIsAnimationComplete(true)}
+                >
+                    <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i>
+                    <div className="work__preview">
+                        <img src={item.contentImages[0]?.imageUrl} alt="" />
+                    </div>
+                    <div className="work__content">
+                        <h2 className="work__title">
+                            <a href="#" target="_blank">{item.article}</a>
+                        </h2>
+                        <div className="work__description">
+                            <p>{item.description}</p>
+                        </div>
+                        <ul className="tags">
+                            {
+                                item.tags.map(tag => {
+                                    return (
+                                        <li
+                                        key={tag.value}
+                                        className="tags__item"
+                                        >
+                                            {tag.label}
+                                        </li>
+                                    )
+                                })
+                            }
+                        </ul>
+                        <div className="work__footer">
+                            <a className="btn btn--black btn--rounded btn--small" style={{'margin-right': '10px'}} href={item.gitHubLink} target="_blank">
+                                <i class="fa-brands fa-github"></i> GitHub</a>
+                            <a className="btn btn--blue btn--rounded btn--small" href={item.link} target="_blank">Перейти на сайт</a>
+                        </div>
+                    </div>
+                </motion.article>
+            )
+        })
+
+        if (!worksEnded && works.length > 0) {
+            items.push(
+                (
+                    <motion.button
+                        key='load-more'
+                        className='work__load-more'
+                        // style={{'display': !worksEnded && posts.length > 0 ? 'block' : 'none'}}
+                        disabled={isDataLoading}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        initial={{scale: 0.8, opacity: 0}}
+                        animate={{scale: 1, opacity: 1}}
+                        exit={{scale: 0.7, opacity: 0}}
+                        onClick={() => onHandleLoadMore()} >
+                        Загрузить ещё
+                    </motion.button>
+                )
+            )
+        }
+
+        return items;
+    }
 
     return (
         <>
            <h1 className="page__title">Мои работы</h1>
 
-            <article className="work">
-                <div className="work__preview">
-                    <picture>
-                        <source srcSet="https://place-hold.it/575x150" media="(max-width: 575px)" />
-                        <img src="/assets/images/works/work-1.jpg" alt="" />
-                    </picture>
-                </div>
-                <div className="work__content">
-                    <h2 className="work__title">
-                        <a href="#" target="_blank">altermono.com</a>
-                    </h2>
-                    <div className="work__description">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis nemo ipsam voluptatibus consequatur mollitia, voluptate temporibus perferendis a! Velit, omnis! Dolorum autem, magni quidem numquam modi neque. Cupiditate, quis hic?</p>
-                    </div>
-                    <ul className="tags">
-                        <li className="tags__item">дизайн</li>
-                        <li className="tags__item">создание сайтов</li>
-                        <li className="tags__item">SMM</li>
-                    </ul>
-                    <div className="work__footer">
-                        <a className="btn btn--blue btn--rounded btn--small" href="#" target="_blank">Перейти на сайт</a>
-                    </div>
-                </div>
-            </article>
-
-            <article className="work">
-                <div className="work__preview">
-                    <picture>
-                        <source srcSet="https://place-hold.it/575x150/333" media="(max-width: 575px)" />
-                        <img src="/assets/images/works/work-2.jpg" alt="" />
-                    </picture>
-                </div>
-                <div className="work__content">
-                    <h2 className="work__title">
-                        <a href="#" target="_blank">codedoco.com</a>
-                    </h2>
-                    <div className="work__description">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis nemo ipsam voluptatibus consequatur mollitia</p>
-                    </div>
-                    <ul className="tags">
-                        <li className="tags__item">дизайн</li>
-                        <li className="tags__item">создание сайтов</li>
-                        <li className="tags__item">SMM</li>
-                        <li className="tags__item">дизайн</li>
-                        <li className="tags__item">создание сайтов</li>
-                        <li className="tags__item">SMM</li>
-                    </ul>
-                    <div className="work__footer">
-                        <a className="btn btn--blue btn--rounded btn--small" href="#" target="_blank">Перейти на сайт</a>
-                    </div>
-                </div>
-            </article>
+           <AddContent type='works' />
+            <AnimatePresence>
+                {renderWorks(works)}
+            </AnimatePresence>
         </>
     );
 }

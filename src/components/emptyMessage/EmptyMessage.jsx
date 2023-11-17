@@ -1,10 +1,11 @@
 import Lottie from 'lottie-react';
-import lottieImg from './Astronaut.json';
+import postsImg from './Astronaut.json';
+import worksImg from './Lochness.json';
 import { motion } from 'framer-motion';
 
 import './emptyMessage.scss';
 
-const EmptyMessage = () => {
+const EmptyMessage = (props) => {
 
     return (
         <motion.div
@@ -13,10 +14,24 @@ const EmptyMessage = () => {
             exit={{opacity: 0, scale: .6}}
             transition={{ease: 'easeInOut', duration: .5}}
         >
-            <Lottie animationData={lottieImg} loop={true} />
+            <Lottie
+            animationData={props.type === 'works' ? worksImg : postsImg}
+            loop={true} />
             <div className='empty'>
-                <h1 className='empty__title'>Посты пока отсутствуют :(</h1>
-                <p className='empty__subtitle'>Добавьте пост и исправьте это!</p>
+                <h1 className='empty__title'>
+                {
+                    props.type === 'works' ?
+                    'Работ пока нет :(' :
+                    'Посты пока отсутствуют :('
+                }
+                </h1>
+                <p className='empty__subtitle'>
+                {
+                    props.type === 'works' ?
+                    'Если есть работы, то обязательно добавьте их!' :
+                    'Добавьте свой первый пост!'
+                }
+                </p>
             </div>
         </motion.div>
     )

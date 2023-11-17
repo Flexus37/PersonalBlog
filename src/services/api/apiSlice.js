@@ -1,6 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import { getAllContent, getContent, createContent, deleteContent, deleteContentFiles } from '../firebase/FirestoreService';
-import { Await } from 'react-router';
 
 export const apiSlice = createApi({
     reducerPath: 'api',
