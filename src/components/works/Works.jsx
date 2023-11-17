@@ -109,10 +109,22 @@ const Works = () => {
                     onAnimationComplete={() => setIsAnimationComplete(true)}
                 >
                     <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i>
-                    <div className="work__preview">
+                    {
+                        item.contentImages[0] ?
+                        (
+                            <div className="work__preview">
+                                <img src={item.contentImages[0]?.imageUrl} alt="" />
+                            </div>
+                        ) :
+                        null
+                    }
+                    {/* <div className="work__preview">
                         <img src={item.contentImages[0]?.imageUrl} alt="" />
-                    </div>
-                    <div className="work__content">
+                    </div> */}
+                    <div
+                        className="work__content"
+                        style={!item.contentImages[0] ? {'width': '100%', 'max-width': 'none'} : null}
+                    >
                         <h2 className="work__title">
                             <a href="#" target="_blank">{item.article}</a>
                         </h2>
@@ -133,7 +145,10 @@ const Works = () => {
                                 })
                             }
                         </ul>
-                        <div className="work__footer">
+                        <div
+                            className="work__footer"
+                            style={!item.contentImages[0] ? {'text-align': 'left'} : null}
+                        >
                             <a className="btn btn--black btn--rounded btn--small" style={{'margin-right': '10px'}} href={item.gitHubLink} target="_blank">
                                 <i class="fa-brands fa-github"></i> GitHub</a>
                             <a className="btn btn--blue btn--rounded btn--small" href={item.link} target="_blank">Перейти на сайт</a>

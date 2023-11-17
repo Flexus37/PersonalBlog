@@ -343,7 +343,7 @@ const AddContent = (props) => {
                                            ref={el => (textareaRefs.current[2] = el)}
                                            placeholder="Ссылка на сайт"
                                            data-autoresize
-                                           value={description}
+                                           value={link}
                                            onChange={(e) => setLink(e.target.value)}
                                            onInput={autoresizeTextarea}>
                                        </textarea>
@@ -359,7 +359,7 @@ const AddContent = (props) => {
                                            ref={el => (textareaRefs.current[2] = el)}
                                            placeholder="Ссылка на GitHub"
                                            data-autoresize
-                                           value={description}
+                                           value={gitHubLink}
                                            onChange={(e) => setGitHubLink(e.target.value)}
                                            onInput={autoresizeTextarea}>
                                        </textarea>
