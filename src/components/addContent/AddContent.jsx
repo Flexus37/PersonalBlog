@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef} from 'react';
+import { useState, useMemo, useRef, useEffect} from 'react';
 import { useCreateContentMutation } from '../../services/api/apiSlice';
 import { Timestamp } from 'firebase/firestore';
 import { resizeFile } from '../../services/resize/resizeFile';
@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence} from 'framer-motion';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import { autoresizeTextarea } from '../../services/autoResizeTextarea';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -111,16 +112,23 @@ const AddContent = (props) => {
 
     const textareaRefs = useRef([])
 
-    function autoresizeTextarea() {
-        textareaRefs.current.forEach(textarea => {
-            if (textarea) {
-                textarea.style.height = 'auto';
-                textarea.style.height = textarea.scrollHeight + 'px';
-            }
-        });
-    }
+    useEffect(() => {
+        autoresizeTextarea(textareaRefs, '27px');
+    }, [])
 
-    autoresizeTextarea();
+    autoresizeTextarea(textareaRefs, '27px');
+
+    // function autoresizeTextarea() {
+    //     textareaRefs.current.forEach(textarea => {
+    //         if (textarea) {
+    //             textarea.style.height = 'auto';
+    //             textarea.style.height = textarea.scrollHeight + 'px';
+    //         }
+    //     });
+    // };
+
+
+    // autoresizeTextarea();
 
     const onHandleSubmit = async (e) => {
         e.preventDefault();
@@ -391,13 +399,28 @@ const AddContent = (props) => {
                             <div className="add-content__form-actions">
                                 <label className="add-content__file" htmlFor={`add-content-${props.type}-file`}>
                                     <img src={addFileImg} alt="" />
-                                    <input
-                                        onChange={handleImageLoaded}
-                                        name='file'
-                                        type='file'
-                                        multiple
-                                        accept='image/*'
-                                        id={`add-content-${props.type}-file`} />
+                                    {
+                                        props.type === 'works' ?
+                                        (
+                                            <input
+                                                onChange={handleImageLoaded}
+                                                name='file'
+                                                type='file'
+                                                accept='image/*'
+                                                id={`add-content-${props.type}-file`}
+                                            />
+                                        ) :
+                                        (
+                                            <input
+                                                onChange={handleImageLoaded}
+                                                name='file'
+                                                type='file'
+                                                multiple
+                                                accept='image/*'
+                                                id={`add-content-${props.type}-file`}
+                                            />
+                                        )
+                                    }
                                 </label>
                                 <button className="add-content__send" type="submit">
                                     <img src={sendImg} alt="" />
