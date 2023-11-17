@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation} from '../../services/api/apiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getDocCount } from '../../services/firebase/FirestoreService';
@@ -18,7 +18,6 @@ const Posts = () => {
     const [postEnded, setPostEnded] = useState(false);
     const [showEmptyMessage, setShowEmptyMessage] = useState(true);
 
-    // Спросить у чата про alias. Работает не ключ значение, а наоборот
     const {
         data: posts = [],
         isLoading: isDataLoading,

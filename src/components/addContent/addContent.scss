@@ -156,6 +156,11 @@
         grid-template-rows: repeat(3, auto);
         column-gap: 1rem;
 
+        &-works {
+            grid-template-columns: 1fr;
+            grid-template-rows: none;
+        }
+
         &-item {
             display: block;
             width: 10rem;

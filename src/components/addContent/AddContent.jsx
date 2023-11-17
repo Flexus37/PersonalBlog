@@ -118,18 +118,6 @@ const AddContent = (props) => {
 
     autoresizeTextarea(textareaRefs, '27px');
 
-    // function autoresizeTextarea() {
-    //     textareaRefs.current.forEach(textarea => {
-    //         if (textarea) {
-    //             textarea.style.height = 'auto';
-    //             textarea.style.height = textarea.scrollHeight + 'px';
-    //         }
-    //     });
-    // };
-
-
-    // autoresizeTextarea();
-
     const onHandleSubmit = async (e) => {
         e.preventDefault();
 
@@ -363,8 +351,8 @@ const AddContent = (props) => {
                                    (
                                        <textarea
                                            className="add-content__textarea"
-                                           name="work-link"
-                                           ref={el => (textareaRefs.current[2] = el)}
+                                           name="work-githublink"
+                                           ref={el => (textareaRefs.current[3] = el)}
                                            placeholder="Ссылка на GitHub"
                                            data-autoresize
                                            value={gitHubLink}
@@ -390,7 +378,12 @@ const AddContent = (props) => {
                                     )
                                     : null
                                 }
-                                <div className="add-content__image-preview">
+                                <div
+                                    className={
+                                        props.type === 'works' ? "add-content__image-preview add-content__image-preview-works" :
+                                        "add-content__image-preview"
+                                    }
+                                >
                                     <AnimatePresence>
                                         {loadedImagesPreview}
                                     </AnimatePresence>
