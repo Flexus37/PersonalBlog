@@ -1,11 +1,18 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import { getAllContent, getContent, createContent, deleteContent, deleteContentFiles } from '../firebase/FirestoreService';
+import { getAllContent, getUserInfo, getContent, createUserInfo, createContent, deleteContent, deleteContentFiles } from '../firebase/FirestoreService';
 
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({baseUrl: '/api'}),
     tagTypes: ['Posts', 'Users', 'Images', 'Stories'],
     endpoints: builder => ({
+        getUserInfo: builder.query({
+            queryFn: async userId => {
+                const userInfo = await getUserInfo(userId);
+                return {data: userInfo}
+            },
+            providesTags: ['Users']
+        }),
         getAllContent: builder.query({
             queryFn: async contentObj => {
                 const contentList = await getAllContent(contentObj);
@@ -19,6 +26,12 @@ export const apiSlice = createApi({
                 return {data: content};
             },
             providesTags: ['Stories']
+        }),
+        createUserInfo: builder.mutation({
+            queryFn: async userInfoObj => {
+                return await createUserInfo(userInfoObj);
+            },
+            providesTags: ['Users']
         }),
         createContent: builder.mutation({
             queryFn: async contentObj => {
@@ -45,7 +58,9 @@ export const apiSlice = createApi({
 export const {
     useGetContentQuery,
     useGetAllContentQuery,
+    useGetUserInfoQuery,
     useCreateContentMutation,
+    useCreateUserInfoMutation,
     useDeleteContentMutation,
     useDeleteContentFilesMutation
 } = apiSlice;

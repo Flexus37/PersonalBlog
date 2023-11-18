@@ -18,6 +18,24 @@ import { storage } from './FirestoreConfig';
 //     return usersList;
 // }
 
+export async function getUserInfo(userId = '1') {
+    const docRef = doc(db, 'users', userId)
+    const docSnapshot = await getDoc(docRef);
+
+    const data = docSnapshot.data();
+
+    return {
+        id: data.id,
+        ...data
+    }
+}
+
+export async function createUserInfo({userId = '1', content}) {
+    const contentCol = collection(db, 'users', userId);
+    const docRef = await addDoc(contentCol, content);
+    return docRef.id;
+}
+
 export async function getAllContent({contentType, contentLimit}) {
     let q;
 
