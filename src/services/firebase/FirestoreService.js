@@ -44,20 +44,17 @@ export async function getAllContent({contentType, contentLimit}) {
     } else {
         q = query(collection(db, 'users', '1', contentType), orderBy('time', 'desc'));
     }
-    // const q = query(collection(db, 'users', '1', contentType),
-    //     orderBy('time', 'desc'), contentLimit ? limit(contentLimit) : null);
+
     const docSnapshot = await getDocs(q);
     const docList = docSnapshot.docs.map(doc => {
         const data = doc.data();
 
-        // Проверяем, есть ли поле time в данных и оно не пустое
         if (data.time) {
 
             const milliseconds = data.time.seconds * 1000;
             const dateObject = new Date(milliseconds);
             const time = dateObject.toLocaleString();
 
-            // Возвращаем объект данных с преобразованным временем
             return {
                 ...data,
                 id: doc.id,
@@ -74,9 +71,6 @@ export async function getAllContent({contentType, contentLimit}) {
 };
 
 export async function getContent({contentType, contentId}) {
-    // const q = query(collection(db, 'users', '1', contentType, contentId));
-    console.log(contentType, contentId);
-
     const docRef = doc(db, 'users', '1', contentType, contentId)
     const docSnapshot = await getDoc(docRef);
 
@@ -87,31 +81,6 @@ export async function getContent({contentType, contentId}) {
         id: data.id,
         time: new Date(data.time.seconds * 1000).toLocaleString()
     }
-
-    // const docList = docSnapshot.docs.map(doc => {
-    //     const data = doc.data();
-
-    //     // Проверяем, есть ли поле time в данных и оно не пустое
-    //     if (data.time) {
-
-    //         const milliseconds = data.time.seconds * 1000;
-    //         const dateObject = new Date(milliseconds);
-    //         const time = dateObject.toLocaleString();
-
-    //         // Возвращаем объект данных с преобразованным временем
-    //         return {
-    //             ...data,
-    //             id: doc.id,
-    //             time
-    //         };
-    //     }
-
-    //     return {
-    //         ...data,
-    //         id: doc.id
-    //     };
-    // })
-    // return docList;
 };
 
 

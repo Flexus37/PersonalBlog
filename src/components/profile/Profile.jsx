@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { storage } from '../../services/firebase/FirestoreConfig';
+import {ref as storageRef, uploadString, getDownloadURL } from 'firebase/storage';
 import { useGetUserInfoQuery, useCreateUserInfoMutation } from '../../services/api/apiSlice';
 import { autoresizeTextarea } from '../../services/autoResizeTextarea';
 import { v4 as uuidv4 } from 'uuid';
@@ -92,8 +94,15 @@ const Profile = () => {
     const [profession, setProfession] = useState('');
     const [about, setAbout] = useState('');
     const [links, setLinks] = useState([]);
-    const [avatarImage, setAvatarImage] = useState(defaultAvatarImage);
-    const [profilePreviewImage, setProfilePreviewImage] = useState(defaultPreviewProfileImage);
+    const [avatarImage, setAvatarImage] = useState({
+        id: 'defaultImageAvatar',
+        file: defaultAvatarImage
+    });
+    const [profilePreviewImage, setProfilePreviewImage] = useState({
+        id: 'defaultPreviewProfileImage',
+        file: defaultPreviewProfileImage
+    });
+    const [isPreLoading, setIsPreLoading] = useState(false);
 
     const textareaRefs = useRef([]);
 
@@ -132,7 +141,10 @@ const Profile = () => {
         const file = e.target.files[0];
         if (file) {
             resizeFile(file, 100, 100, 100, 100, 100)
-                .then(image => setAvatarImage(image))
+                .then(image => setAvatarImage({
+                    id: uuidv4(),
+                    file: image
+                }))
                 .catch(err => {
                     console.error("Ошибка при изменении размера файла", err);
                 });
@@ -143,15 +155,35 @@ const Profile = () => {
         const file = e.target.files[0];
         if (file) {
             resizeFile(file, 300, 180, 100, 300, 180)
-                .then(image => setProfilePreviewImage(image))
+                .then(image => setProfilePreviewImage({
+                    id: uuidv4(),
+                    file: image
+                }))
                 .catch(err => {
                     console.error("Ошибка при изменении размера файла", err);
                 });
         }
     }
 
-    const onHandleSubmit = (e) => {
+    const onHandleSubmit = async (e) => {
         e.preventDefault();
+
+        setIsPreLoading(true);
+
+        const snapshotAvatarImg = await uploadString(
+            storageRef(storage, `users/1/userInfo/${avatarImage.id}.jpg`),
+            avatarImage.file,
+            'data_url'
+        );
+
+        const snapshotProfilePreviewImg = await uploadString(
+            storageRef(storage, `users/1/userInfo/${profilePreviewImage.id}.jpg`),
+            profilePreviewImage.file,
+            'data_url'
+        );
+
+        const avatarImageUrl = await getDownloadURL(snapshotAvatarImg.ref);
+        const profilePreviewImageUrl = await getDownloadURL(snapshotProfilePreviewImg.ref);
 
         const newUserInfo = {
             name,
@@ -159,13 +191,22 @@ const Profile = () => {
             email,
             profession,
             about,
-            links
+            links,
+            avatarImage: {
+                id: avatarImage.id,
+                url: avatarImageUrl
+            },
+            profilePreviewImage: {
+                id: profilePreviewImage.id,
+                url: profilePreviewImageUrl
+            }
         }
 
-
+        createUserInfo({userId: '1', content: newUserInfo});
+        setIsPreLoading(false);
     }
 
-    if (isDataLoading) {
+    if (isDataLoading || isPreLoading) {
         return <Spinner />
     }
 
@@ -277,8 +318,8 @@ const Profile = () => {
 
                     </div>
                     <div className="cabinet__content">
-                        <img className='cabinet__content-header' src={profilePreviewImage} alt="" />
-                        <img className='cabinet__content-avatar' src={avatarImage} alt="" />
+                        <img className='cabinet__content-header' src={profilePreviewImage.file} alt="" />
+                        <img className='cabinet__content-avatar' src={avatarImage.file} alt="" />
 
                         <label className="cabinet__file">
                             <input
