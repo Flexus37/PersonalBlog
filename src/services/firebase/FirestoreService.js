@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase/auth';
-import { collection, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit } from 'firebase/firestore';
+import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit } from 'firebase/firestore';
 import { db } from './FirestoreConfig';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { storage } from './FirestoreConfig';
@@ -31,9 +31,12 @@ export async function getUserInfo(userId = '1') {
 }
 
 export async function createUserInfo({userId = '1', content}) {
-    const contentCol = collection(db, 'users', userId);
-    const docRef = await addDoc(contentCol, content);
-    return docRef.id;
+    // const contentCol = collection(db, 'users', userId);
+    // const docRef = await addDoc(contentCol, content);
+    // return docRef.id;
+    const userRef = doc(db, 'users', userId)
+    await setDoc(userRef, content, {merge: true});
+    return userId;
 }
 
 export async function getAllContent({contentType, contentLimit}) {

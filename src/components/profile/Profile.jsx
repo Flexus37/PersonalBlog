@@ -134,6 +134,14 @@ const Profile = () => {
             setProfession(userInfo.profession);
             setAbout(userInfo.about);
             setLinks(userInfo.links);
+            setAvatarImage({
+                id: userInfo.avatarImage.id,
+                file: userInfo.avatarImage.url
+            });
+            setProfilePreviewImage({
+                id: userInfo.profilePreviewImage.id,
+                file: userInfo.profilePreviewImage.url
+            })
         }
     }, [userInfo])
 
