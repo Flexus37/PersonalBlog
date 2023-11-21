@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { resizeFile } from '../../services/resize/resizeFile';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
@@ -241,6 +243,36 @@ const Profile = () => {
         <>
             <h1 className="page__title">Профиль</h1>
 
+            <Formik
+                initialValues = {{
+                    name,
+                    surname,
+                    email,
+                    profession,
+                    about,
+                    links,
+                    avatarImage,
+                    profilePreviewImage
+                }}
+                validationSchema = {Yup.object({
+                    name: Yup.string()
+                            .min(2, 'Минимум 2 символа!')
+                            .required('Обязательное поле!'),
+                    surname: Yup.string()
+                            .min(2, 'Минимум 2 символа!')
+                            .required('Обязательное поле!'),
+                    email: Yup.string()
+                            .email('Неправильный email адрес')
+                            .required('Обязательное поле!'),
+                    profession: Yup.string()
+                                .max(50, 'Максимум 50 символов'),
+                    about: Yup.string()
+                            .max(1000, 'Максимум 1000 символов')
+                })}
+                onSubmit={(e) => onHandleSubmit(e)}
+            >
+
+            </Formik>
             <form onSubmit={(e) => onHandleSubmit(e)} className="form" action="/" method="post">
                 <div className="cabinet">
                     <div className="cabinet__form">
@@ -319,6 +351,7 @@ const Profile = () => {
                             isMulti
                             options={selectOptions}
                             styles={selectStyles}
+                            value={links}
                             onChange={(links) => setLinks(links)}
                         />
 
