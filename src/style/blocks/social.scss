@@ -5,6 +5,17 @@
     @include breakpoint($tablet-bp) {
         display: none;
     }
+
+    &__icon {
+        width: 3rem;
+        height: 3rem;
+        color: #fff;
+        transition: color .2s ease-in-out;
+
+        &:hover {
+            color: $blue;
+        }
+    }
 }
 
 .social__item {

@@ -2,29 +2,70 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useGetUserInfoQuery } from '../../services/api/apiSlice';
+import { Icon } from '@iconify/react';
 
 import ContactModal from '../modals/ContactModal';
 
 import './sidebar.scss';
 
-import profileAvatar from '../../resources/img/profile-avatar.jpg';
-import sidebarHeader from '../../resources/img/sidebar-header.jpg';
-import instagram from '../../resources/img/instagram.svg';
-import vk from '../../resources/img/vk.svg';
-import pinterest from '../../resources/img/pinterest.svg';
+import defaultAvatarImage from '../../resources/img/profile/default-avatar.jpg';
+import defaultPreviewProfileImage from '../../resources/img/profile/default-preview-profile-image.jpg';
 
 const Sidebar = () => {
+    const [name, setName] = useState('');
+    const [surname, setSurname] = useState('');
+    const [profession, setProfession] = useState('');
+    const [about, setAbout] = useState('');
+    const [links, setLinks] = useState([]);
+    const [avatarImage, setAvatarImage] = useState({
+        id: 'defaultImageAvatar',
+        file: defaultAvatarImage
+    });
+    const [profilePreviewImage, setProfilePreviewImage] = useState({
+        id: 'defaultPreviewProfileImage',
+        file: defaultPreviewProfileImage
+    });
     const [showModal, setShowModal] = useState(false);
 
     const {
-        data: userInfo = {},
+        data: userInfo,
         isLoading,
         isError
     } = useGetUserInfoQuery('1');
 
+    useEffect(() => {
+        if (userInfo) {
+            setName(userInfo.name);
+            setSurname(userInfo.surname);
+            setProfession(userInfo.profession);
+            setAbout(userInfo.about);
+            setLinks(userInfo.links);
+            setAvatarImage({
+                id: userInfo.avatarImage.id,
+                file: userInfo.avatarImage.url
+            });
+            setProfilePreviewImage({
+                id: userInfo.profilePreviewImage.id,
+                file: userInfo.profilePreviewImage.url
+            })
+        }
+    }, [userInfo])
+
     const onHandleShowModal = () => {
         setShowModal(true);
         document.body.style.overflow = 'hidden';
+    }
+
+    const renderLinks = (links) => {
+        return links.map(item => {
+            return (
+                <li key={item.value} className="social__item">
+                    <a className="social__link" href={item.url} target="_blank">
+                        <Icon className='social__icon' icon={item.value} alt={item.label} />
+                    </a>
+                </li>
+            )
+        })
     }
 
     return (
@@ -38,37 +79,23 @@ const Sidebar = () => {
                 null
             }
             <div className="sidebar__header">
-                <img src={sidebarHeader} alt=""/>
+                <img src={profilePreviewImage.file} alt="Sidebar header image"/>
             </div>
 
             <div className="sidebar__content">
                 <div className="profile">
-                    <img className="profile__avatar" src={profileAvatar} alt=""/>
+                    <img className="profile__avatar" src={avatarImage.file} alt="User avatar image"/>
                     <div className="profile__header">
-                        <div className="profile__name">Алексей Дудин</div>
-                        <div className="profile__prof">блог front-end разработчика</div>
+                        <div className="profile__name">{`${name} ${surname}`}</div>
+                        <div className="profile__prof">{profession}</div>
                     </div>
 
                     <ul className="social">
-                        <li className="social__item">
-                            <a className="social__link" href="#" target="_blank">
-                                <img src={instagram} alt="Instagram Алексей Дудин"/>
-                            </a>
-                        </li>
-                        <li className="social__item">
-                            <a className="social__link" href="#" target="_blank">
-                                <img src={vk} alt="ВКонтакте Алексей Дудин"/>
-                            </a>
-                        </li>
-                        <li className="social__item">
-                            <a className="social__link" href="#" target="_blank">
-                                <img src={pinterest} alt="Pinterest Алексей Дудин"/>
-                            </a>
-                        </li>
+                        {renderLinks(links)}
                     </ul>
 
                     <div className="profile__text">
-                        <p>Front-end разработчик. Практик верстки сайтов. Созданием сайтов занимаюсь с 2012 года. Работал в нескольких ИТ компаниях и наработал более 10 000 часов в создании сайтов различной сложности.</p>
+                        <p>{about}</p>
                     </div>
                 </div>
                 <nav className="nav nav--mobile">
