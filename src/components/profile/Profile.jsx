@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { resizeFile } from '../../services/resize/resizeFile';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, useField } from 'formik';
 import * as Yup from 'yup';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -73,21 +73,45 @@ const selectStyles = {
     }),
 }
 
-// const selectOptions = [
-//     { value: 'github', label: 'GitHub' },
-//     { value: 'vk', label: 'ВКонтакте' },
-//     { value: 'telegram', label: 'Telegram' },
-//     { value: 'instagram', label: 'Instagram' },
-//     { value: 'behance', label: 'Behance' }
-// ];
-
 const selectOptions = [
-    { value: 'mdi:github', label: 'GitHub' },
-    { value: 'uil:vk', label: 'ВКонтакте' },
-    { value: 'ic:baseline-telegram', label: 'Telegram' },
-    { value: 'mdi:instagram', label: 'Instagram' },
-    { value: 'ri:behance-fill', label: 'Behance' }
+    { value: 'mdi:github', label: 'GitHub', url: '' },
+    { value: 'uil:vk', label: 'ВКонтакте', url: '' },
+    { value: 'ic:baseline-telegram', label: 'Telegram', url: '' },
+    { value: 'mdi:instagram', label: 'Instagram', url: '' },
+    { value: 'ri:behance-fill', label: 'Behance', url: '' }
 ];
+
+const FormInput = ({...props}) => {
+    const [field, meta, helpers] = useField(props);
+    const textareaRef = useRef([]);
+
+    // Функция для вызова autoresizeTextarea и Formik обработчика изменений
+    const onHandleInput = (e) => {
+        field.onChange(e); // Formik обработчик
+        autoresizeTextarea(textareaRef, '27px'); // Ваша кастомная функция
+    };
+
+    useEffect(() => {
+        // Вызов функции autoresizeTextarea при первом рендере
+        if(textareaRef.current){
+            autoresizeTextarea(textareaRef, '27px');
+        }
+    }, []);
+
+    return (
+        <div className="form__group form__group--medium">
+            {props.type === 'textarea' ? (
+                <textarea ref={el => (textareaRef.current[0] = el)} {...field} {...props} onChange={onHandleInput} />
+            ) : (
+                <input {...field} {...props} />
+            )}
+            <span className="form__line"></span>
+            {meta.touched && meta.error ? (
+                <div className="form__error">{meta.error}</div>
+            ) : null}
+        </div>
+    );
+}
 
 const Profile = () => {
     const [name, setName] = useState('');
@@ -121,12 +145,6 @@ const Profile = () => {
             isError: isDataCreatingError
         }
     ] = useCreateUserInfoMutation();
-
-    useEffect(() => {
-        autoresizeTextarea(textareaRefs, '27px');
-    }, [])
-
-    autoresizeTextarea(textareaRefs, '27px');
 
     useEffect(() => {
         if (userInfo) {
@@ -175,45 +193,16 @@ const Profile = () => {
         }
     }
 
-    const onHandleSubmit = async (e) => {
-        e.preventDefault();
-
-        setIsPreLoading(true);
-
-        const snapshotAvatarImg = await uploadString(
-            storageRef(storage, `users/1/userInfo/${avatarImage.id}.jpg`),
-            avatarImage.file,
-            'data_url'
-        );
-
-        const snapshotProfilePreviewImg = await uploadString(
-            storageRef(storage, `users/1/userInfo/${profilePreviewImage.id}.jpg`),
-            profilePreviewImage.file,
-            'data_url'
-        );
-
-        const avatarImageUrl = await getDownloadURL(snapshotAvatarImg.ref);
-        const profilePreviewImageUrl = await getDownloadURL(snapshotProfilePreviewImg.ref);
-
-        const newUserInfo = {
-            name,
-            surname,
-            email,
-            profession,
-            about,
-            links,
-            avatarImage: {
-                id: avatarImage.id,
-                url: avatarImageUrl
-            },
-            profilePreviewImage: {
-                id: profilePreviewImage.id,
-                url: profilePreviewImageUrl
-            }
-        }
-
-        createUserInfo({userId: '1', content: newUserInfo});
-        setIsPreLoading(false);
+    const onHandleLinkChange = (value, newUrl) => {
+        setLinks(currentLinks => {
+            return currentLinks.map(link => {
+                if (link.value === value) {
+                    return {...link, url: newUrl}
+                } else {
+                    return link
+                }
+            })
+        })
     }
 
     if (isDataLoading || isPreLoading) {
@@ -232,7 +221,13 @@ const Profile = () => {
         return links.map(item => {
             return (
                 <div key={item.value} className="form__group form__group--medium">
-                    <input type="text" className="form__control" placeholder={`Ссылка на ${item.label}`} />
+                    <input
+                        type="text"
+                        className="form__control"
+                        placeholder={`Ссылка на ${item.label}`}
+                        value={item.url}
+                        onChange={(e) => onHandleLinkChange(item.value, e.target.value)}
+                    />
                     <span className="form__line"></span>
                 </div>
             )
@@ -245,15 +240,13 @@ const Profile = () => {
 
             <Formik
                 initialValues = {{
-                    name,
-                    surname,
-                    email,
-                    profession,
-                    about,
-                    links,
-                    avatarImage,
-                    profilePreviewImage
+                    name: name,
+                    surname: surname,
+                    email: email,
+                    profession: profession,
+                    about: about,
                 }}
+                enableReinitialize
                 validationSchema = {Yup.object({
                     name: Yup.string()
                             .min(2, 'Минимум 2 символа!')
@@ -269,125 +262,182 @@ const Profile = () => {
                     about: Yup.string()
                             .max(1000, 'Максимум 1000 символов')
                 })}
-                onSubmit={(e) => onHandleSubmit(e)}
+                onSubmit={async (values, { setSubmitting, resetForm }) => {
+                    setSubmitting(true);
+                    setIsPreLoading(true);
+
+                    try {
+
+                        let profilePreviewImageUrl = profilePreviewImage.file;
+                        let avatarImageUrl = avatarImage.file;
+
+                        if (avatarImage.id !== userInfo.avatarImage.id && avatarImage.id !== 'defaultImageAvatar') {
+                            const snapshotAvatarImg = await uploadString(
+                                storageRef(storage, `users/1/userInfo/${avatarImage.id}.jpg`),
+                                avatarImage.file,
+                                'data_url'
+                            );
+
+                            avatarImageUrl = await getDownloadURL(snapshotAvatarImg.ref);
+                        }
+
+
+
+                        if (profilePreviewImage.id !== userInfo.profilePreviewImage.id && profilePreviewImage.id !== 'defaultPreviewProfileImage') {
+                            const snapshotProfilePreviewImg = await uploadString(
+                                storageRef(storage, `users/1/userInfo/${profilePreviewImage.id}.jpg`),
+                                profilePreviewImage.file,
+                                'data_url'
+                            );
+
+                            profilePreviewImageUrl = await getDownloadURL(snapshotProfilePreviewImg.ref);
+                        }
+
+
+                        const newUserInfo = {
+                            ...values,
+                            links,
+                            avatarImage: {
+                                id: avatarImage.id,
+                                url: avatarImageUrl
+                            },
+                            profilePreviewImage: {
+                                id: profilePreviewImage.id,
+                                url: profilePreviewImageUrl
+                            }
+                        }
+
+                        await createUserInfo({userId: '1', content: newUserInfo});
+
+                    } catch (error) {
+                        console.error("Ошибка при отправке данных пользователя: ", error);
+                    }
+
+                    setName(values.name);
+                    setSurname(values.surname);
+                    setEmail(values.email);
+                    setProfession(values.profession);
+                    setAbout(values.about);
+
+                    setIsPreLoading(false);
+                    setSubmitting(false);
+                }}
             >
+                 <Form className="form" action="/" method="post">
+                    <div className="cabinet">
+                        <div className="cabinet__form">
+                            <div className="form__group form__group--medium">
+                                <FormInput
+                                    id='name'
+                                    name='name'
+                                    type="text"
+                                    className="form__control"
+                                    placeholder="Ваше имя"
+                                />
+                                <span className="form__line"></span>
+                            </div>
 
+                            <div className="form__group form__group--medium">
+                                <FormInput
+                                    id='surname'
+                                    name='surname'
+                                    type="text"
+                                    className="form__control"
+                                    placeholder="Ваша фамилия"
+                                />
+                                <span className="form__line"></span>
+                            </div>
+
+                            <div className="form__group form__group--medium">
+                                <FormInput
+                                    id='email'
+                                    name='email'
+                                    type="email"
+                                    className="form__control"
+                                    placeholder="Ваш e-mail"
+                                />
+                                <span className="form__line"></span>
+                            </div>
+
+                            <div className="form__group form__group--medium">
+                                <input id='password' name='password' type="password" className="form__control" placeholder="Новый пароль" />
+                                <span className="form__line"></span>
+                            </div>
+
+                            <div className="form__group form__group--medium">
+                                <input id='retry-password' name='retry-password' type="password" className="form__control" placeholder="Подтвердите пароль" />
+                                <span className="form__line"></span>
+                            </div>
+
+                            <div className="form__group form__group--medium">
+                                <FormInput
+                                    className='form__control form__control--textarea'
+                                    id='profession'
+                                    name="profession"
+                                    type='textarea'
+                                    placeholder='Чей блог? Например: "блог frontend-разработчика"'
+                                ></FormInput>
+                                <span className="form__line"></span>
+                            </div>
+
+                            <div className="form__group form__group--medium">
+                                <FormInput
+                                    className='form__control form__control--textarea'
+                                    id='about'
+                                    name="about"
+                                    type='textarea'
+                                    placeholder='О себе'
+                                ></FormInput>
+                                <span className="form__line"></span>
+                            </div>
+
+                            <Select
+                                className='add-post__tags'
+                                placeholder='Выберите ссылки'
+                                closeMenuOnSelect={false}
+                                components={animatedComponents}
+                                isMulti
+                                options={selectOptions}
+                                styles={selectStyles}
+                                value={links}
+                                onChange={(links) => setLinks(links)}
+                            />
+
+                            {renderInputLinks(links)}
+
+                        </div>
+                        <div className="cabinet__content">
+                            <img className='cabinet__content-header' src={profilePreviewImage.file} alt="" />
+                            <img className='cabinet__content-avatar' src={avatarImage.file} alt="" />
+
+                            <label className="cabinet__file">
+                                <input
+                                    name='avatar-input'
+                                    type="file"
+                                    accept='image/*'
+                                    onChange={onHandleAvatarLoaded}
+                                />
+                                выбрать аватар
+                                <br />
+                            </label>
+                            <label className="cabinet__file">
+                                <input
+                                    name='header-profile-input'
+                                    type="file"
+                                    accept='image/*'
+                                    onChange={onHandleProfilePreviewLoaded}
+                                />
+                                выбрать шапку профиля
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="form__footer">
+                        <button className="btn btn--blue btn--rounded btn--small" type="submit">Сохранить</button>
+                    </div>
+                </Form>
             </Formik>
-            <form onSubmit={(e) => onHandleSubmit(e)} className="form" action="/" method="post">
-                <div className="cabinet">
-                    <div className="cabinet__form">
-                        <div className="form__group form__group--medium">
-                            <input
-                                type="text"
-                                className="form__control"
-                                placeholder="Ваше имя"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                            <span className="form__line"></span>
-                        </div>
 
-                        <div className="form__group form__group--medium">
-                            <input
-                                type="text"
-                                className="form__control"
-                                placeholder="Ваша фамилия"
-                                value={surname}
-                                onChange={(e) => setSurname(e.target.value)}
-                            />
-                            <span className="form__line"></span>
-                        </div>
-
-                        <div className="form__group form__group--medium">
-                            <input
-                                type="email"
-                                className="form__control"
-                                placeholder="Ваш e-mail"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <span className="form__line"></span>
-                        </div>
-
-                        <div className="form__group form__group--medium">
-                            <input type="password" className="form__control" placeholder="Новый пароль" />
-                            <span className="form__line"></span>
-                        </div>
-
-                        <div className="form__group form__group--medium">
-                            <input type="password" className="form__control" placeholder="Подтвердите пароль" />
-                            <span className="form__line"></span>
-                        </div>
-
-                        <div className="form__group form__group--medium">
-                            <textarea
-                                ref={el => (textareaRefs.current[0] = el)}
-                                className='form__control form__control--textarea'
-                                name="profession"
-                                placeholder='Чей блог? Например: "блог frontend-разработчика"'
-                                value={profession}
-                                onChange={(e) => setProfession(e.target.value)}
-                            ></textarea>
-                            <span className="form__line"></span>
-                        </div>
-
-                        <div className="form__group form__group--medium">
-                            <textarea
-                                ref={el => (textareaRefs.current[1] = el)}
-                                className='form__control form__control--textarea'
-                                name="profession"
-                                placeholder='О себе'
-                                value={about}
-                                onChange={(e) => setAbout(e.target.value)}
-                            ></textarea>
-                            <span className="form__line"></span>
-                        </div>
-
-                        <Select
-                            className='add-post__tags'
-                            placeholder='Выберите ссылки'
-                            closeMenuOnSelect={false}
-                            components={animatedComponents}
-                            isMulti
-                            options={selectOptions}
-                            styles={selectStyles}
-                            value={links}
-                            onChange={(links) => setLinks(links)}
-                        />
-
-                        {renderInputLinks(links)}
-
-                    </div>
-                    <div className="cabinet__content">
-                        <img className='cabinet__content-header' src={profilePreviewImage.file} alt="" />
-                        <img className='cabinet__content-avatar' src={avatarImage.file} alt="" />
-
-                        <label className="cabinet__file">
-                            <input
-                                name='avatar-input'
-                                type="file"
-                                accept='image/*'
-                                onChange={onHandleAvatarLoaded}
-                            />
-                            выбрать аватар
-                            <br />
-                        </label>
-                        <label className="cabinet__file">
-                            <input
-                                name='header-profile-input'
-                                type="file"
-                                accept='image/*'
-                                onChange={onHandleProfilePreviewLoaded}
-                            />
-                            выбрать шапку профиля
-                        </label>
-                    </div>
-                </div>
-
-                <div className="form__footer">
-                    <button className="btn btn--blue btn--rounded btn--small" type="submit">Сохранить</button>
-                </div>
-            </form>
         </>
     );
 }

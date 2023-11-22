@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { useGetUserInfoQuery } from '../../services/api/apiSlice';
 
 import ContactModal from '../modals/ContactModal';
 
@@ -14,6 +15,12 @@ import pinterest from '../../resources/img/pinterest.svg';
 
 const Sidebar = () => {
     const [showModal, setShowModal] = useState(false);
+
+    const {
+        data: userInfo = {},
+        isLoading,
+        isError
+    } = useGetUserInfoQuery('1');
 
     const onHandleShowModal = () => {
         setShowModal(true);

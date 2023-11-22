@@ -4,6 +4,12 @@
         max-width: 28rem;
         margin: 0 auto;
     }
+
+    &__error {
+        position: absolute;
+        color: red;
+        font-size: 1.2rem;
+    }
 }
 
 .form__group {
