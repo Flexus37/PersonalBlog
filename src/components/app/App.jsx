@@ -7,6 +7,8 @@ import { MainPage, ProfilePage, WorksPage, SearchResultsPage } from "../pages";
 
 import SinglePost from "../posts/SinglePost";
 
+import LogIn from "../auth/LogIn";
+
 import './app.scss';
 
 import { useEffect } from "react";
@@ -25,6 +27,7 @@ function App() {
         <main className="main">
             <div className="container">
                 {/* <Suspense fallback> */}
+                {/* <LogIn /> */}
                   <Sidebar/>
                   <Routes>
                     <Route path="/" element={<MainPage/>} />
@@ -33,6 +36,7 @@ function App() {
                     <Route path="/single-post/:id" element={<SinglePost/>} />
                     <Route path='/search-results' element={<SearchResultsPage/>} />
                   </Routes>
+
                 {/* </Suspense> */}
             </div>
         </main>

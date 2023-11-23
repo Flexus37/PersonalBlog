@@ -31,7 +31,7 @@ export const apiSlice = createApi({
             queryFn: async userInfoObj => {
                 return await createUserInfo(userInfoObj);
             },
-            providesTags: ['Users']
+            invalidatesTags: ['Users']
         }),
         createContent: builder.mutation({
             queryFn: async contentObj => {

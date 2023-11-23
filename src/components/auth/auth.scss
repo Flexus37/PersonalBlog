@@ -1,0 +1,74 @@
+@import '../../style/vars';
+@import '../../style/mixins';
+@import '../../style/blocks/form.scss';
+@import '../../style/blocks/btn.scss';
+
+.auth {
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    &__content {
+        display: block;
+        max-width: 330px;
+        max-height: 350px;
+        width: 100%;
+        height: auto;
+        padding: 2.5rem;
+        flex-shrink: 0;
+
+        background-color: $primary;
+        box-shadow: 0 15px 25px rgba($black, .35);
+        border-radius: 5px;
+    }
+
+
+    &__title {
+        display: block;
+        width: 100%;
+
+        font-size: 2.1rem;
+        text-align: center;
+
+        margin-bottom: 4.5rem;
+    }
+
+    &__submit {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 1.5rem;
+
+        font-weight: 700;
+
+        img {
+            margin-right: 1rem;
+            width: 1.4rem;
+            height: 1.4rem;
+        }
+    }
+
+    &__extra {
+        display: flex;
+        justify-content: center;
+
+        &-item {
+            margin-right: 1rem;
+
+            &:last-child {
+                margin-right: 0;
+            }
+
+            a {
+                color: #fff;
+
+                &:hover {
+                    color: $blue;
+                }
+            }
+        }
+
+
+    }
+}
