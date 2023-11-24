@@ -7,8 +7,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { resizeFile } from '../../services/resize/resizeFile';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { Formik, Form, useField } from 'formik';
+import { Formik, Form} from 'formik';
 import * as Yup from 'yup';
+import FormInput from '../../services/formikInput/FormInput';
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
@@ -80,38 +81,6 @@ const selectOptions = [
     { value: 'mdi:instagram', label: 'Instagram', url: '' },
     { value: 'ri:behance-fill', label: 'Behance', url: '' }
 ];
-
-const FormInput = ({...props}) => {
-    const [field, meta, helpers] = useField(props);
-    const textareaRef = useRef([]);
-
-    // Функция для вызова autoresizeTextarea и Formik обработчика изменений
-    const onHandleInput = (e) => {
-        field.onChange(e); // Formik обработчик
-        autoresizeTextarea(textareaRef, '27px'); // Ваша кастомная функция
-    };
-
-    useEffect(() => {
-        // Вызов функции autoresizeTextarea при первом рендере
-        if(textareaRef.current){
-            autoresizeTextarea(textareaRef, '27px');
-        }
-    }, []);
-
-    return (
-        <div className="form__group form__group--medium">
-            {props.type === 'textarea' ? (
-                <textarea ref={el => (textareaRef.current[0] = el)} {...field} {...props} onChange={onHandleInput} />
-            ) : (
-                <input {...field} {...props} />
-            )}
-            <span className="form__line"></span>
-            {meta.touched && meta.error ? (
-                <div className="form__error">{meta.error}</div>
-            ) : null}
-        </div>
-    );
-}
 
 const Profile = () => {
     const [name, setName] = useState('');

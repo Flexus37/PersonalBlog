@@ -15,10 +15,6 @@ import { useEffect } from "react";
 
 function App() {
 
-  // useEffect(() => {
-  //   console.log(getPosts());
-  // }, []);
-
   return (
     <Router>
       <div className="page" id="page">

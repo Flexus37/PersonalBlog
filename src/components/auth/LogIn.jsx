@@ -14,19 +14,15 @@ const LogIn = () => {
                         <input
                             type="text"
                             className="form__control"
-                            placeholder={`Ссылка на `}
-                            // value={item.url}
-                            // onChange={(e) => onHandleLinkChange(item.value, e.target.value)}
+                            placeholder='Логин или email'
                         />
                         <span className="form__line"></span>
                     </div>
                     <div className="auth__form form__group form__group--medium">
                         <input
-                            type="text"
+                            type="password"
                             className="form__control"
-                            placeholder={`Ссылка на `}
-                            // value={item.url}
-                            // onChange={(e) => onHandleLinkChange(item.value, e.target.value)}
+                            placeholder='Пароль'
                         />
                         <span className="form__line"></span>
                     </div>
