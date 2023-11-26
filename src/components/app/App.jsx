@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { useSelector } from 'react-redux'
+import { useSelector} from 'react-redux'
 
 import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";

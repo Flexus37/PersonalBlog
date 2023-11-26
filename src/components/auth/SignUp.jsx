@@ -2,12 +2,17 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormInput from '../../services/formikInput/FormInput';
 import { Link } from 'react-router-dom';
+import {createUserWithEmailAndPassword} from 'firebase/auth'
+import { useDispatch} from 'react-redux'
+import { setUserAuthentication } from '../../services/api/userInfoSlice';
+import { auth } from '../../services/firebase/FirestoreConfig';
 
 import AuthHeader from './AuthHeader';
 
 import './auth.scss';
 
 const SignUp = () => {
+    const dispatch = useDispatch();
 
     return (
         <div className="auth">
@@ -21,7 +26,6 @@ const SignUp = () => {
                             initialValues={{
                                 name: '',
                                 surname: '',
-                                login: '',
                                 email: '',
                                 password: '',
                                 confirmPassword: ''
@@ -33,10 +37,6 @@ const SignUp = () => {
                                 surname: Yup.string()
                                     .min(2, 'Минимум 2 символа!')
                                     .required('Обязательное поле!'),
-                                login: Yup.string()
-                                    .min(2, 'Минимум 2 символа!')
-                                    .required('Обязательное поле!')
-                                    .matches(/^[A-Za-z0-9]+$/, 'Только латинские буквы и цифры!'),
                                 email: Yup.string()
                                     .email('Неправильный email адрес')
                                     .required('Обязательное поле!'),
@@ -47,8 +47,29 @@ const SignUp = () => {
                                     .oneOf([Yup.ref('password'), null], 'Пароли должны совпадать')
                                     .required('Необходимо подтвердить пароль')
                             })}
+                            onSubmit={(values, {setSubmitting}) => {
+                                console.log('Going Reg...')
+                                setSubmitting(true);
+                                try {
+                                    createUserWithEmailAndPassword(auth, values.email, values.password)
+                                        .then((userCredential) => {
+                                            const user = userCredential.user;
+                                            console.log(user);
+                                        })
+                                        .catch((error) => {
+                                            console.log('CreateUserEmailAndPassword Error', error.code, error.message)
+                                        });
+
+                                    dispatch(setUserAuthentication(true));
+                                }
+                                catch(error) {
+                                    console.log(error.code, error.message);
+                                }
+
+                                setSubmitting(false);
+                            }}
                         >
-                            <Form action="" className="auth__form">
+                            <Form className="auth__form">
 
                                 <div className="auth__form form__group form__group--medium">
                                     <FormInput
@@ -105,7 +126,9 @@ const SignUp = () => {
                                     <span className="form__line"></span>
                                 </div>
 
-                                <button className="auth__submit btn btn--small btn--rounded btn--blue">Зарегистрироваться</button>
+                                <button type="submit" className="auth__submit btn btn--small btn--rounded btn--blue">
+                                    Зарегистрироваться
+                                </button>
 
                             </Form>
                         </Formik>

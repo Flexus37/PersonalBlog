@@ -231,7 +231,7 @@ const Profile = () => {
                     about: Yup.string()
                             .max(1000, 'Максимум 1000 символов')
                 })}
-                onSubmit={async (values, { setSubmitting, resetForm }) => {
+                onSubmit={async (values, { setSubmitting }) => {
                     setSubmitting(true);
                     setIsPreLoading(true);
 
