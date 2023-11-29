@@ -1,8 +1,27 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+import { setUserAuthentication } from '../../services/api/userInfoSlice';
+import { auth } from '../../services/firebase/FirestoreConfig';
+import { signOut } from 'firebase/auth';
+
 
 import './header.scss';
 
 const Header = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const onHandleSignOut = () => {
+        signOut(auth)
+            .then(() => {
+                dispatch(setUserAuthentication(false));
+                navigate('/');
+            })
+            .catch(() => {
+                console.log('Error sign out!');
+            })
+    }
+
     return (
         <header className='header'>
             <div className="header__left">
@@ -60,7 +79,7 @@ const Header = () => {
                             >Профиль</NavLink>
                         </li>
                         <li  className="nav__item">
-                            <a className="nav__link" href="#">Выйти</a>
+                            <a onClick={onHandleSignOut} className="nav__link" href="#">Выйти</a>
                         </li>
                     </ul>
                 </nav>
