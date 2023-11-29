@@ -4,8 +4,11 @@ import FormInput from '../../services/formikInput/FormInput';
 import { Link, useNavigate } from 'react-router-dom';
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { useDispatch} from 'react-redux'
-import { setUserAuthentication } from '../../services/api/userInfoSlice';
+import { setUserAuthentication, setUserId } from '../../services/api/userInfoSlice';
 import { auth } from '../../services/firebase/FirestoreConfig';
+import { useCreateUserInfoMutation } from '../../services/api/apiSlice';
+import { getDownloadURL, ref } from 'firebase/storage';
+import { storage } from '../../services/firebase/FirestoreConfig';
 
 import AuthHeader from './AuthHeader';
 
@@ -14,6 +17,10 @@ import './auth.scss';
 const SignUp = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [
+        createUserInfo
+    ] = useCreateUserInfoMutation();
 
     return (
         <div className="auth">
@@ -55,7 +62,30 @@ const SignUp = () => {
                                     createUserWithEmailAndPassword(auth, values.email, values.password)
                                         .then((userCredential) => {
                                             const user = userCredential.user;
-                                            console.log(user);
+
+                                            // const avatarImageUrl = getDownloadURL(ref(storage, 'users/default-avatar.jpg'))
+                                            // const profilePreviewImageUrl = getDownloadURL(ref(storage, 'users/default-preview-profile-image.jpg'))
+
+                                            createUserInfo({
+                                                userId: user.uid,
+                                                content: {
+                                                    name: values.name,
+                                                    surname: values.surname,
+                                                    email: values.email,
+                                                    profession: 'мой персональный блог',
+                                                    about: '',
+                                                    links: [],
+                                                    avatarImage: {
+                                                        id: 'default-avatar',
+                                                        url: 'https://firebasestorage.googleapis.com/v0/b/personalblogflexus37.appspot.com/o/users%2Fdefault-avatar.jpg?alt=media&token=59354186-fdc6-47d3-81dd-af5af855d82b'
+                                                    },
+                                                    profilePreviewImage: {
+                                                        id: 'default-preview-profile-image',
+                                                        url: 'https://firebasestorage.googleapis.com/v0/b/personalblogflexus37.appspot.com/o/users%2Fdefault-preview-profile-image.jpg?alt=media&token=a75acc54-4077-4a15-a0e3-61df0aaf39a0'
+                                                    }
+                                                }
+                                            })
+                                            dispatch(setUserId(user.uid));
                                             dispatch(setUserAuthentication(true));
                                             navigate('/');
                                         })

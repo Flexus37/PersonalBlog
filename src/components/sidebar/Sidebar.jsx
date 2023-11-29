@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useGetUserInfoQuery } from '../../services/api/apiSlice';
 import { Icon } from '@iconify/react';
+import { useSelector } from 'react-redux'
 
 import ContactModal from '../modals/ContactModal';
 
@@ -27,11 +28,13 @@ const Sidebar = () => {
     });
     const [showModal, setShowModal] = useState(false);
 
+    const {userId} = useSelector(state => state.userInfo);
+
     const {
         data: userInfo,
         isLoading,
         isError
-    } = useGetUserInfoQuery('1');
+    } = useGetUserInfoQuery(userId);
 
     useEffect(() => {
         if (userInfo) {
@@ -57,6 +60,10 @@ const Sidebar = () => {
     }
 
     const renderLinks = (links) => {
+        if (!links || links.length === 0) {
+            return null;
+        }
+
         return links.map(item => {
             return (
                 <li key={item.value} className="social__item">
@@ -94,7 +101,7 @@ const Sidebar = () => {
                         {renderLinks(links)}
                     </ul>
 
-                    <div className="profile__text">
+                    <div className={`profile__text${about?.length === 0 ? ' empty' : ''}`}>
                         <p>{about}</p>
                     </div>
                 </div>

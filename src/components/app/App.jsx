@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-route
 import { auth } from "../../services/firebase/FirestoreConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { useSelector, useDispatch } from 'react-redux'
-import { setUserAuthentication } from "../../services/api/userInfoSlice";
+import { setUserAuthentication, setUserId } from "../../services/api/userInfoSlice";
 
 import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
@@ -28,6 +28,7 @@ function App() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         dispatch(setUserAuthentication(true));
+        dispatch(setUserId(user.uid));
       } else {
         dispatch(setUserAuthentication(false));
       }

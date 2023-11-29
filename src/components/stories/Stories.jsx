@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation } from '../../services/api/apiSlice';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useSelector } from 'react-redux'
 
 import AddStory from './add-story/AddStory';
 import AddContent from '../addContent/AddContent';
@@ -23,11 +24,13 @@ const Stories = () => {
     const storiesWrapper = useRef(null);
     const storiesInner = useRef(null);
 
+    const {userId} = useSelector(state => state.userInfo);
+
     const {
         data: stories = [],
         isLoading: isContentLoading,
         isError: isContentError
-    } = useGetAllContentQuery({contentType: 'stories'});
+    } = useGetAllContentQuery({userId, contentType: 'stories'});
 
     const [
         deleteContent,
@@ -63,8 +66,8 @@ const Stories = () => {
     }, [stories])
 
     const onHandleDelete = (storiesId, contentArr) => {
-        deleteContent({contentType: 'stories', id: storiesId});
-        deleteContentFiles({contentType: 'stories', contentArr: contentArr});
+        deleteContent({userId, contentType: 'stories', id: storiesId});
+        deleteContentFiles({userId, contentType: 'stories', contentArr: contentArr});
 
         // setIsAnimationComplete(true);
     }
@@ -185,11 +188,5 @@ const Stories = () => {
 
     );
 }
-
-// const Portal = (props) => {
-//     // document.body.appendChild(props.children);
-
-//     return createPortal(props.children, document.body);
-// }
 
 export default Stories;

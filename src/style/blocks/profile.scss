@@ -66,9 +66,13 @@
     font-size: 1.2rem;
     text-align: center;
 
-
     border-top: 1px solid #1C1C1C;
     border-bottom: 1px solid #1C1C1C;
+
+    &.empty {
+        border: none;
+        padding: 2rem 0;
+    }
 
     padding: 3rem 0;
     margin: 3rem 0;

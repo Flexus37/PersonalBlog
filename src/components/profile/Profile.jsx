@@ -10,6 +10,8 @@ import makeAnimated from 'react-select/animated';
 import { Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import FormInput from '../../services/formikInput/FormInput';
+import { useSelector } from 'react-redux'
+
 
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spinner/Spinner';
@@ -99,13 +101,15 @@ const Profile = () => {
     });
     const [isPreLoading, setIsPreLoading] = useState(false);
 
+    const {userId} = useSelector(state => state.userInfo);
+
     const textareaRefs = useRef([]);
 
     const {
         data: userInfo,
         isLoading: isDataLoading,
         isError: isDataError
-    } = useGetUserInfoQuery('1');
+    } = useGetUserInfoQuery(userId);
 
     const [
         createUserInfo,
@@ -242,7 +246,7 @@ const Profile = () => {
 
                         if (avatarImage.id !== userInfo.avatarImage.id && avatarImage.id !== 'defaultImageAvatar') {
                             const snapshotAvatarImg = await uploadString(
-                                storageRef(storage, `users/1/userInfo/${avatarImage.id}.jpg`),
+                                storageRef(storage, `users/${userId}/userInfo/${avatarImage.id}.jpg`),
                                 avatarImage.file,
                                 'data_url'
                             );
@@ -254,7 +258,7 @@ const Profile = () => {
 
                         if (profilePreviewImage.id !== userInfo.profilePreviewImage.id && profilePreviewImage.id !== 'defaultPreviewProfileImage') {
                             const snapshotProfilePreviewImg = await uploadString(
-                                storageRef(storage, `users/1/userInfo/${profilePreviewImage.id}.jpg`),
+                                storageRef(storage, `users/${userId}/userInfo/${profilePreviewImage.id}.jpg`),
                                 profilePreviewImage.file,
                                 'data_url'
                             );
@@ -276,7 +280,7 @@ const Profile = () => {
                             }
                         }
 
-                        await createUserInfo({userId: '1', content: newUserInfo});
+                        await createUserInfo({userId, content: newUserInfo});
 
                     } catch (error) {
                         console.error("Ошибка при отправке данных пользователя: ", error);

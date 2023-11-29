@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation} from '../../services/api/apiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getDocCount } from '../../services/firebase/FirestoreService';
+import { useSelector } from 'react-redux'
 
 import './posts.scss';
 
@@ -18,15 +19,17 @@ const Posts = () => {
     const [postEnded, setPostEnded] = useState(false);
     const [showEmptyMessage, setShowEmptyMessage] = useState(true);
 
+    const {userId} = useSelector(state => state.userInfo);
+
     const {
         data: posts = [],
         isLoading: isDataLoading,
         isError: isDataError
-    } = useGetAllContentQuery({contentType: 'posts', contentLimit: postsLimit});
+    } = useGetAllContentQuery({userId, contentType: 'posts', contentLimit: postsLimit});
 
     useEffect(() => {
         async function fetchData() {
-            const count = await getDocCount('posts');
+            const count = await getDocCount({userId, contentType: 'posts'});
             setDocCount(count);
         }
 
@@ -65,8 +68,8 @@ const Posts = () => {
 
     const onHandleDelete = (postId, imageIdArr) => {
         // setDeletingPostId(postId);
-        deleteContent({contentType: 'posts', id: postId});
-        deleteContentFiles({contentType: 'posts', contentIdArr: imageIdArr});
+        deleteContent({userId, contentType: 'posts', id: postId});
+        deleteContentFiles({userId, contentType: 'posts', contentIdArr: imageIdArr});
 
         // setDeletingPostId('');
         setIsAnimationComplete(true);

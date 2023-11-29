@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation} from '../../services/api/apiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getDocCount } from '../../services/firebase/FirestoreService';
+import { useSelector } from 'react-redux'
 
 import AddContent from '../addContent/AddContent';
 import Spinner from '../spinner/Spinner';
@@ -17,11 +18,13 @@ const Works = () => {
     const [worksEnded, setWorksEnded] = useState(false);
     const [showEmptyMessage, setShowEmptyMessage] = useState(true);
 
+    const {userId} = useSelector(state => state.userInfo);
+
     const {
         data: works = [],
         isLoading: isDataLoading,
         isError: isDataError
-    } = useGetAllContentQuery({contentType: 'works', contentLimit: worksLimit});
+    } = useGetAllContentQuery({userId, contentType: 'works', contentLimit: worksLimit});
 
     useEffect(() => {
         async function fetchData() {
@@ -64,8 +67,8 @@ const Works = () => {
 
     const onHandleDelete = (workId, imageIdArr) => {
         // setDeletingPostId(postId);
-        deleteContent({contentType: 'works', id: workId});
-        deleteContentFiles({contentType: 'works', contentIdArr: imageIdArr});
+        deleteContent({userId, contentType: 'works', id: workId});
+        deleteContentFiles({userId, contentType: 'works', contentIdArr: imageIdArr});
 
         // setDeletingPostId('');
         setIsAnimationComplete(true);

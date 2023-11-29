@@ -9,6 +9,7 @@ import { motion, AnimatePresence} from 'framer-motion';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { autoresizeTextarea } from '../../services/autoResizeTextarea';
+import { useSelector } from 'react-redux'
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -108,6 +109,8 @@ const AddContent = (props) => {
     const [imageArr, setImageArr] = useState([]);
     const [isPreLoading, setIsPreLoading] = useState(false);
 
+    const {userId} = useSelector(state => state.userInfo);
+
     const [createContent, {isLoading, isError}] = useCreateContentMutation();
 
     const textareaRefs = useRef([])
@@ -135,7 +138,7 @@ const AddContent = (props) => {
                 imageArr.map(async item => {
 
                     const snapshotImg = await uploadString(
-                        storageRef(storage, `users/1/${props.type}/${item.imageId}.jpg`),
+                        storageRef(storage, `users/${userId}/${props.type}/${item.imageId}.jpg`),
                         item.imageFile,
                         'data_url'
                     );
@@ -180,7 +183,7 @@ const AddContent = (props) => {
         }
 
         setIsPreLoading(false);
-        createContent({contentType: props.type, content: newContent});
+        createContent({userId, contentType: props.type, content: newContent});
 
         setDescription('');
         setArticle('');

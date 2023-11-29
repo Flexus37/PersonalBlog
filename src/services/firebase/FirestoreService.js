@@ -39,13 +39,13 @@ export async function createUserInfo({userId = '1', content}) {
     return userId;
 }
 
-export async function getAllContent({contentType, contentLimit}) {
+export async function getAllContent({userId, contentType, contentLimit}) {
     let q;
 
     if (contentLimit) {
-        q = query(collection(db, 'users', '1', contentType), orderBy('time', 'desc'), limit(contentLimit));
+        q = query(collection(db, 'users', userId, contentType), orderBy('time', 'desc'), limit(contentLimit));
     } else {
-        q = query(collection(db, 'users', '1', contentType), orderBy('time', 'desc'));
+        q = query(collection(db, 'users', userId, contentType), orderBy('time', 'desc'));
     }
 
     const docSnapshot = await getDocs(q);
@@ -73,8 +73,8 @@ export async function getAllContent({contentType, contentLimit}) {
     return docList;
 };
 
-export async function getContent({contentType, contentId}) {
-    const docRef = doc(db, 'users', '1', contentType, contentId)
+export async function getContent({userId, contentType, contentId}) {
+    const docRef = doc(db, 'users', userId, contentType, contentId)
     const docSnapshot = await getDoc(docRef);
 
     const data = docSnapshot.data();
@@ -87,9 +87,9 @@ export async function getContent({contentType, contentId}) {
 };
 
 
-export async function createContent({contentType, content}) {
+export async function createContent({userId, contentType, content}) {
     console.log('Content: ' + contentType, content);
-    const contentCol = collection(db, 'users', '1', contentType);
+    const contentCol = collection(db, 'users', userId, contentType);
     const docRef = await addDoc(contentCol, content);
     return {
         id: docRef.id,
@@ -98,18 +98,18 @@ export async function createContent({contentType, content}) {
     };
 };
 
-export async function deleteContent({contentType, id}) {
+export async function deleteContent({userId, contentType, id}) {
     // Возвращает undefined при успехе
     // Сделать проверку на удаление
-    await deleteDoc(doc(db, 'users', '1', contentType, `${id}`));
+    await deleteDoc(doc(db, 'users', userId, contentType, id));
 
     return id;
 }
 
-export async function deleteContentFiles({contentType, contentArr}) {
+export async function deleteContentFiles({userId, contentType, contentArr}) {
     if (contentArr.length > 0) {
         contentArr.forEach(item => {
-            const contentRef = storageRef(storage, `users/1/${contentType}/${item.imageId}.jpg`);
+            const contentRef = storageRef(storage, `users/${userId}/${contentType}/${item.imageId}.jpg`);
             deleteObject(contentRef)
             .then(() => {
                 console.log('Deleting successfully!')
@@ -123,8 +123,8 @@ export async function deleteContentFiles({contentType, contentArr}) {
     return contentArr;
 }
 
-export async function getDocCount(contentType = '') {
-    const coll = collection(db, 'users', '1', contentType);
+export async function getDocCount({userId, contentType = ''}) {
+    const coll = collection(db, 'users', userId, contentType);
     const snapshot = await getCountFromServer(coll);
     return snapshot.data().count;
 }
