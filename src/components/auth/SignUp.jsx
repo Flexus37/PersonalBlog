@@ -1,7 +1,7 @@
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormInput from '../../services/formikInput/FormInput';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { useDispatch} from 'react-redux'
 import { setUserAuthentication } from '../../services/api/userInfoSlice';
@@ -13,6 +13,7 @@ import './auth.scss';
 
 const SignUp = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     return (
         <div className="auth">
@@ -55,12 +56,12 @@ const SignUp = () => {
                                         .then((userCredential) => {
                                             const user = userCredential.user;
                                             console.log(user);
+                                            dispatch(setUserAuthentication(true));
+                                            navigate('/');
                                         })
                                         .catch((error) => {
                                             console.log('CreateUserEmailAndPassword Error', error.code, error.message)
                                         });
-
-                                    dispatch(setUserAuthentication(true));
                                 }
                                 catch(error) {
                                     console.log(error.code, error.message);

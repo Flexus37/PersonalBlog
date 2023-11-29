@@ -2,7 +2,7 @@ import { createEntityAdapter, createSlice } from "@reduxjs/toolkit"
 
 const userInfoAdapter = createEntityAdapter();
 const initialState = userInfoAdapter.getInitialState({
-    id: null,
+    userId: null,
     isAuthenticated: false,
     loadingStatus: 'idle'
 });
@@ -15,7 +15,7 @@ const userInfoSlice = createSlice({
             state.isAuthenticated = action.payload;
         },
         setUserId: (state, action) => {
-            state.id = action.payload;
+            state.userId = action.payload;
         }
     }
 })

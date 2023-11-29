@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { Suspense } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { useSelector} from 'react-redux'
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { auth } from "../../services/firebase/FirestoreConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import { useSelector, useDispatch } from 'react-redux'
+import { setUserAuthentication } from "../../services/api/userInfoSlice";
 
 import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
@@ -18,44 +21,55 @@ import './app.scss';
 
 function App() {
   const {isAuthenticated} = useSelector(state => state.userInfo);
+  const dispatch = useDispatch();
 
-  if (!isAuthenticated) {
-    return (
-      <Router>
-        <Suspense fallback={<ErrorMessage />}>
-          <Routes>
-            <Route path="/" element={<LogIn />} />
-            <Route path='/registration' element={<SignUp />} />
-          </Routes>
-        </Suspense>
-      </Router>
-    )
-  }
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(setUserAuthentication(true));
+      } else {
+        dispatch(setUserAuthentication(false));
+      }
+    });
+  }, [])
 
   return (
     <Router>
-      <div className="page" id="page">
-        <Header/>
+      {
+        isAuthenticated ? (
+          <div className="page" id="page">
+            <Header/>
 
-        <main className="main">
-            <div className="container">
-                <Suspense fallback={<ErrorMessage />}>
-                  <Sidebar/>
-                  <Routes>
-                    <Route path="/" element={<MainPage/>} />
-                    <Route path="/profile" element={<ProfilePage/>} />
-                    <Route path="/works" element={<WorksPage/>} />
-                    <Route path="/single-post/:id" element={<SinglePost/>} />
-                    <Route path='/search-results' element={<SearchResultsPage/>} />
-                  </Routes>
+            <main className="main">
+                <div className="container">
+                    <Suspense fallback={<ErrorMessage />}>
+                      <Sidebar/>
+                      <Routes>
+                        <Route path="/" element={<MainPage/>} />
+                        <Route path="/profile" element={<ProfilePage/>} />
+                        <Route path="/works" element={<WorksPage/>} />
+                        <Route path="/single-post/:id" element={<SinglePost/>} />
+                        <Route path='/search-results' element={<SearchResultsPage/>} />
+                      </Routes>
 
-                </Suspense>
-            </div>
-        </main>
-      </div>
+                    </Suspense>
+                </div>
+            </main>
+          </div>
+        ) : (
+          <Suspense fallback={<ErrorMessage />}>
+            <Routes>
+              <Route path="/" element={<LogIn />} />
+              <Route path='/registration' element={<SignUp />} />
+            </Routes>
+          </Suspense>
+        )
+      }
     </Router>
-
   );
+
+
 }
 
 export default App;

@@ -42,12 +42,11 @@ const LogIn = () => {
                                         .then(userCredential => {
                                             const user = userCredential.user;
                                             console.log(user);
+                                            dispatch(setUserAuthentication(true));
                                         })
                                         .catch(error => {
                                             console.log('Error from sign in:', error.code, error.message);
                                         })
-
-                                    dispatch(setUserAuthentication(true));
                                 }
                                 catch(error) {
                                     console.log('Log in try/catch error:', error.message);
