@@ -29,14 +29,14 @@ const Header = () => {
                     <ul className="nav__list">
                         <li className="nav__item">
                             <NavLink
-                                    className={({isActive}) => isActive ?
-                                    'nav__link active' : 'nav__link'
-                                    }
-                                    to='/'
-                                    href='#'
+                                className={({isActive}) => isActive ?
+                                'nav__link active' : 'nav__link'
+                                }
+                                to='/'
+                                href='#'
                             >Главная</NavLink>
                         </li>
-                        <li className="nav__item">
+                        {/* <li className="nav__item">
                             <a className="nav__link has-subnav" href="#">Статьи</a>
 
                             <ul className="subnav">
@@ -51,13 +51,22 @@ const Header = () => {
                                 </li>
                             </ul>
 
+                        </li> */}
+                        <li className="nav__item">
+                            <NavLink
+                                className={({isActive}) => isActive ?
+                                'nav__link active' : 'nav__link'
+                                }
+                                to='/friends'
+                                href='#'
+                            >Друзья</NavLink>
                         </li>
                         <li className="nav__item">
                             <a className="nav__link" href="/text.html">Обо мне</a>
                         </li>
-                        <li className="nav__item">
+                        {/* <li className="nav__item">
                             <a className="nav__link" href="/text.html">Реклама</a>
-                        </li>
+                        </li> */}
                     </ul>
                 </nav>
 

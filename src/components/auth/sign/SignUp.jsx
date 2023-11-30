@@ -1,18 +1,18 @@
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import FormInput from '../../services/formikInput/FormInput';
+import FormInput from '../../../services/formikInput/FormInput';
 import { Link, useNavigate } from 'react-router-dom';
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { useDispatch} from 'react-redux'
-import { setUserAuthentication, setUserId } from '../../services/api/userInfoSlice';
-import { auth } from '../../services/firebase/FirestoreConfig';
-import { useCreateUserInfoMutation } from '../../services/api/apiSlice';
+import { setUserAuthentication, setUserId } from '../../../services/api/userInfoSlice';
+import { auth } from '../../../services/firebase/FirestoreConfig';
+import { useCreateUserInfoMutation } from '../../../services/api/apiSlice';
 import { getDownloadURL, ref } from 'firebase/storage';
-import { storage } from '../../services/firebase/FirestoreConfig';
+import { storage } from '../../../services/firebase/FirestoreConfig';
 
-import AuthHeader from './AuthHeader';
+import AuthHeader from '../AuthHeader';
 
-import './auth.scss';
+import '../auth.scss';
 
 const SignUp = () => {
     const dispatch = useDispatch();

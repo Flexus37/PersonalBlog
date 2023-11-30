@@ -8,8 +8,8 @@ import { setUserAuthentication, setUserId } from "../../services/api/userInfoSli
 
 import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
-import { MainPage, ProfilePage, WorksPage, SearchResultsPage } from "../pages";
-import { LogIn, SignUp } from "../auth";
+import { MainPage, ProfilePage, WorksPage, SearchResultsPage, FriendsPage } from "../pages";
+import { SignIn, SignUp } from "../auth";
 // import { selectAll } from "../../services/api/userInfoSlice";
 
 import SinglePost from "../posts/SinglePost";
@@ -50,7 +50,8 @@ function App() {
                         <Route path="/" element={<MainPage/>} />
                         <Route path="/profile" element={<ProfilePage/>} />
                         <Route path="/works" element={<WorksPage/>} />
-                        <Route path="/single-post/:id" element={<SinglePost/>} />
+                        <Route path="/friends" element={<FriendsPage />} />
+                        {/* <Route path="/single-post/:id" element={<SinglePost/>} /> */}
                         <Route path='/search-results' element={<SearchResultsPage/>} />
                       </Routes>
 
@@ -61,7 +62,7 @@ function App() {
         ) : (
           <Suspense fallback={<ErrorMessage />}>
             <Routes>
-              <Route path="/" element={<LogIn />} />
+              <Route path="/" element={<SignIn />} />
               <Route path='/registration' element={<SignUp />} />
             </Routes>
           </Suspense>

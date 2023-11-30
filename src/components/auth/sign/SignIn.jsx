@@ -1,19 +1,21 @@
 import { Formik, Form } from 'formik';
-import FormInput from '../../services/formikInput/FormInput';
+import FormInput from '../../../services/formikInput/FormInput';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
-import {signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../services/firebase/FirestoreConfig';
+import {signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
+import { auth } from '../../../services/firebase/FirestoreConfig';
 import { useDispatch} from 'react-redux'
-import { setUserAuthentication } from '../../services/api/userInfoSlice';
+import { setUserAuthentication } from '../../../services/api/userInfoSlice';
 
-import AuthHeader from './AuthHeader';
+import AuthHeader from '../AuthHeader';
 
-import './auth.scss';
-import GoogleIcon from '../../resources/img/icons/Google.svg'
+import '../auth.scss';
+import GoogleIcon from '../../../resources/img/icons/Google.svg'
 
-const LogIn = () => {
+const SignIn = () => {
     const dispatch = useDispatch();
+
+    const GoggleProvider = new GoogleAuthProvider();
 
     return (
         <div className="auth">
@@ -99,4 +101,4 @@ const LogIn = () => {
     )
 }
 
-export default LogIn;
+export default SignIn;

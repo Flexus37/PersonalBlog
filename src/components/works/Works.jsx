@@ -28,7 +28,7 @@ const Works = () => {
 
     useEffect(() => {
         async function fetchData() {
-            const count = await getDocCount('works');
+            const count = await getDocCount({userId, contentType: 'works'});
             setDocCount(count);
         }
 
