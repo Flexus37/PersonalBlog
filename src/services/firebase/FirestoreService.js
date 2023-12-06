@@ -106,9 +106,9 @@ export async function deleteContent({userId, contentType, id}) {
     return id;
 }
 
-export async function deleteContentFiles({userId, contentType, contentArr}) {
-    if (contentArr.length > 0) {
-        contentArr.forEach(item => {
+export async function deleteContentFiles({userId, contentType, contentIdArr}) {
+    if (contentIdArr.length > 0) {
+        contentIdArr.forEach(item => {
             const contentRef = storageRef(storage, `users/${userId}/${contentType}/${item.imageId}.jpg`);
             deleteObject(contentRef)
             .then(() => {
@@ -120,7 +120,7 @@ export async function deleteContentFiles({userId, contentType, contentArr}) {
             })
         })
     }
-    return contentArr;
+    return contentIdArr;
 }
 
 export async function getDocCount({userId, contentType = ''}) {

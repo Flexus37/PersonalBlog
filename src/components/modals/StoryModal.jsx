@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useGetContentQuery } from '../../services/api/apiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSelector } from 'react-redux'
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -15,6 +16,8 @@ const StoryModal = ({closeModal, storyId}) => {
     const [storiesIndex, setStoriesIndex] = useState(0);
     const [totalStoriesSlides, setTotalStoriesSlides] = useState(1);
 
+    const {userId} = useSelector(state => state.userInfo);
+
     const storiesWrapper = useRef(null);
     const storiesInner = useRef(null);
 
@@ -22,7 +25,7 @@ const StoryModal = ({closeModal, storyId}) => {
         data: story,
         isLoading,
         isError
-    } = useGetContentQuery({contentType: 'stories', contentId: storyId})
+    } = useGetContentQuery({userId, contentType: 'stories', contentId: storyId})
 
     useEffect(() => {
         setStoriesWidth(storiesWrapper.current.offsetWidth);
