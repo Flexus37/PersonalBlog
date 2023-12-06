@@ -31,9 +31,6 @@ export async function getUserInfo(userId = '1') {
 }
 
 export async function createUserInfo({userId = '1', content}) {
-    // const contentCol = collection(db, 'users', userId);
-    // const docRef = await addDoc(contentCol, content);
-    // return docRef.id;
     const userRef = doc(db, 'users', userId)
     await setDoc(userRef, content, {merge: true});
     return userId;
