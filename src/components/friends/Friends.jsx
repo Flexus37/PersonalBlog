@@ -9,14 +9,45 @@ import './friends.scss';
 const Friends = () => {
 
 
+
+    // const renderLinks = (links) => {
+    //     if (!links || links.length === 0) {
+    //         return null;
+    //     }
+
+    //     return links.map(item => {
+    //         return (
+    //             <li key={item.value} className="social__item">
+    //                 <a className="social__link" href={item.url} target="_blank">
+    //                     <Icon className='social__icon' icon={item.value} alt={item.label} />
+    //                 </a>
+    //             </li>
+    //         )
+    //     })
+    // }
+
     return (
         <>
-            <h1 className="page__title">Мои друзья</h1>
+            <h1 className="page__title">Все друзья</h1>
 
-            <div className="friend">
-                <img src={profileAvatar} alt="Аватарка друга" className="friend__avatar" />
-                <h2 className='friend__name'>Дудин Алексей</h2>
+            <div className="friends__search">
+                <input type="text" placeholder='Поиск друзей'/>
             </div>
+
+
+            <motion.div
+                className="friends"
+                initial={{opacity: 0, scale: .7}}
+                animate={{opacity: 1, scale: 1}}
+                exit={{opacity: 0, scale: .6}}
+                transition={{ease: "easeInOut", duration: .6}}
+            >
+                <img src={profileAvatar} alt="Аватарка друга" className="friends__avatar" />
+                <h2 className='friends__name'>Дудин Алексей</h2>
+                <ul className="social">
+                    {/* {renderLinks(links)} */}
+                </ul>
+            </motion.div>
         </>
     )
 }

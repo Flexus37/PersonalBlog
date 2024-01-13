@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Suspense } from "react";
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { auth } from "../../services/firebase/FirestoreConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { useSelector, useDispatch } from 'react-redux'
@@ -47,7 +47,9 @@ function App() {
                     <Suspense fallback={<ErrorMessage />}>
                       <Sidebar/>
                       <Routes>
-                        <Route path="/" element={<MainPage/>} />
+                        <Route path="/" element={<Navigate replace to='/blog' />} />
+                        <Route path="/sign-in" element={<Navigate replace to='/blog' />} />
+                        <Route path="/blog" element={<MainPage/>} />
                         <Route path="/profile" element={<ProfilePage/>} />
                         <Route path="/works" element={<WorksPage/>} />
                         <Route path="/friends" element={<FriendsPage />} />
@@ -62,7 +64,8 @@ function App() {
         ) : (
           <Suspense fallback={<ErrorMessage />}>
             <Routes>
-              <Route path="/" element={<SignIn />} />
+              <Route path="/" element={<Navigate replace to='/sign-in' />} />
+              <Route path="/sign-in" element={<SignIn />} />
               <Route path='/registration' element={<SignUp />} />
             </Routes>
           </Suspense>
