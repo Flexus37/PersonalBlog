@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import Spinner from '../spinner/Spinner';
@@ -7,7 +8,7 @@ import profileAvatar from '../../resources/img/profile-avatar.jpg';
 import './friends.scss';
 
 const Friends = () => {
-
+    const [searchInput, setSearchInput] = useState('');
 
 
     // const renderLinks = (links) => {
@@ -31,7 +32,22 @@ const Friends = () => {
             <h1 className="page__title">Все друзья</h1>
 
             <div className="friends__search">
-                <input type="text" placeholder='Поиск друзей'/>
+                <input
+                    type="text"
+                    placeholder='Поиск друзей'
+                    value={searchInput}
+                    onInput={(e) => setSearchInput(e.target.value)}
+                    />
+                {
+                    searchInput ?
+                    <div className="friends__search-clear">
+                        <i
+                        className="fa-solid fa-xmark"
+                        onClick={() => setSearchInput('')}
+                        ></i>
+                    </div>
+                    : null
+                }
             </div>
 
 
