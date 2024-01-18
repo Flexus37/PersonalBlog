@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import {useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setUserAuthentication } from '../../services/api/userInfoSlice';
 import { auth } from '../../services/firebase/FirestoreConfig';
 import { signOut } from 'firebase/auth';
@@ -8,6 +8,7 @@ import { signOut } from 'firebase/auth';
 import './header.scss';
 
 const Header = () => {
+    const {userId} = useSelector(state => state.userInfo);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -32,7 +33,7 @@ const Header = () => {
                                 className={({isActive}) => isActive ?
                                 'nav__link active' : 'nav__link'
                                 }
-                                to='/blog'
+                                to='/blog/im'
                                 href='#'
                             >Главная</NavLink>
                         </li>
