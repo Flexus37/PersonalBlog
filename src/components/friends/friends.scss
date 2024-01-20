@@ -49,6 +49,7 @@
             width: 100%;
             padding: 1rem 2.5rem;
 
+            font-size: 1.8rem;
             border: none;
             border-radius: 5px;
 
@@ -66,21 +67,47 @@
             background-color: $primary;
         }
 
-        i {
-            font-size: 1.8rem;
+        &-btn {
+            max-width: 6.4rem;
+            min-width: 6.4rem;
+            width: 100%;
+
+            border: none;
+            border-radius: 0 5px 5px 0;
+            background: none;
+            background-color: #3b3b3b;
+            transition: background-color .2s ease-in-out;
+
+            &:hover {
+                background-color: $blue;
+
+                & .fa-magnifying-glass {
+                    color: $white;
+                }
+            }
+        }
+
+        & .fa-magnifying-glass,
+        .fa-xmark {
             color: #939393;
+            transition: color .2s ease-in-out;
+        }
+
+        & .fa-magnifying-glass {
+            font-size: 1.8rem;
+        }
+
+        & .fa-xmark {
+            font-size: 2rem;
             cursor: pointer;
 
-            // position: absolute;
-            // z-index: 3;
-            // right: 2.5rem;
-            // top: 50%;
-            // transform: translateY(-50%);
             transition: color .1s ease-in-out;
 
             &:hover {
                 color: $blue;
             }
         }
+
+
     }
 }

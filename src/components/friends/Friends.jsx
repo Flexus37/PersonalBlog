@@ -48,6 +48,9 @@ const Friends = () => {
                     </div>
                     : null
                 }
+                <button className='friends__search-btn' type='button' >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
             </div>
 
 

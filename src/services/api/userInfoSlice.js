@@ -3,6 +3,7 @@ import { createEntityAdapter, createSlice } from "@reduxjs/toolkit"
 const userInfoAdapter = createEntityAdapter();
 const initialState = userInfoAdapter.getInitialState({
     userId: null,
+    currentPageId: null,
     isAuthenticated: false,
     loadingStatus: 'idle'
 });
@@ -16,6 +17,9 @@ const userInfoSlice = createSlice({
         },
         setUserId: (state, action) => {
             state.userId = action.payload;
+        },
+        setCurrentPageId: (state, action) => {
+            state.currentPageId = action.payload
         }
     }
 })
@@ -27,5 +31,6 @@ export const {selectAll} = userInfoAdapter.getSelectors(state => state.userInfo)
 export default reducer;
 export const {
     setUserAuthentication,
-    setUserId
+    setUserId,
+    setCurrentPageId
 } = actions;

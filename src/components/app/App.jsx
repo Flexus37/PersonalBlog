@@ -8,7 +8,7 @@ import { setUserAuthentication, setUserId } from "../../services/api/userInfoSli
 
 import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
-import { MainPage, ProfilePage, WorksPage, SearchResultsPage, FriendsPage, UserPage } from "../pages";
+import { MainPage, ProfilePage, WorksPage, SearchResultsPage, FriendsPage } from "../pages";
 import { SignIn, SignUp } from "../auth";
 // import { selectAll } from "../../services/api/userInfoSlice";
 
@@ -45,12 +45,11 @@ function App() {
             <main className="main">
                 <div className="container">
                     <Suspense fallback={<ErrorMessage />}>
-                      <Sidebar/>
+                      <Sidebar />
                       <Routes>
-                        <Route path="/" element={<Navigate replace to='/blog/im' />} />
-                        <Route path="/sign-in" element={<Navigate replace to='/blog/im' />} />
-                        <Route path="/blog/im" element={<MainPage/>} />
-                        <Route path="/blog/:id" element={<UserPage/>} />
+                        <Route path="/" element={<Navigate replace to={`/blog/${userId}`} />} />
+                        <Route path="/sign-in" element={<Navigate replace to={`/blog/${userId}`} />} />
+                        <Route path="/blog/:id" element={<MainPage/>} />
                         <Route path="/profile" element={<ProfilePage/>} />
                         <Route path="/works/:id" element={<WorksPage/>} />
                         <Route path="/friends" element={<FriendsPage />} />

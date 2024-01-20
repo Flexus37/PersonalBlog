@@ -33,7 +33,7 @@ const Header = () => {
                                 className={({isActive}) => isActive ?
                                 'nav__link active' : 'nav__link'
                                 }
-                                to='/blog/im'
+                                to={`/blog/${userId}`}
                                 href='#'
                             >Главная</NavLink>
                         </li>

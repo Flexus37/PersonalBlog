@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useGetUserInfoQuery } from '../../services/api/apiSlice';
 import { Icon } from '@iconify/react';
 import { useSelector } from 'react-redux'
@@ -29,6 +29,7 @@ const Sidebar = () => {
     const [showModal, setShowModal] = useState(false);
 
     const {userId} = useSelector(state => state.userInfo);
+    const {id} = useParams();
 
     const {
         data: userInfo,
@@ -145,7 +146,7 @@ const Sidebar = () => {
 
             <div className="sidebar__footer">
                 {/* <a className="btn btn--red" href="/works.html">Мои работы</a> */}
-                <Link className="btn btn--red" to='/works'>Мои работы</Link>
+                <Link className="btn btn--red" to={`/works/${id}`}>Мои работы</Link>
                 <button
                     className="btn btn--blue"
                     type="button"
