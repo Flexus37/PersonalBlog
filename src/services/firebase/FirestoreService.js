@@ -11,14 +11,18 @@ import { storage } from './FirestoreConfig';
 //     return userSnapshot;
 // }
 
-// const getUsers = async () => {
-//     const usersCol = collection(db, 'users');
-//     const usersSnapshot = await getDocs(usersCol);
-//     const usersList = usersSnapshot.docs.map(doc => doc.data());
-//     return usersList;
-// }
+export async function getUsers() {
+    const usersCol = collection(db, 'users');
+    const usersSnapshot = await getDocs(usersCol);
+    const usersList = usersSnapshot.docs.map(doc => doc.data());
+    return usersList;
+}
 
 export async function getUserInfo(userId = '1') {
+    if (!userId) {
+        return;
+    }
+
     const docRef = doc(db, 'users', userId)
     const docSnapshot = await getDoc(docRef);
 
@@ -37,6 +41,11 @@ export async function createUserInfo({userId = '1', content}) {
 }
 
 export async function getAllContent({userId, contentType, contentLimit}) {
+
+    if (!userId) {
+        return;
+    }
+
     let q;
 
     if (contentLimit) {
@@ -71,6 +80,10 @@ export async function getAllContent({userId, contentType, contentLimit}) {
 };
 
 export async function getContent({userId, contentType, contentId}) {
+    if (!userId) {
+        return;
+    }
+
     const docRef = doc(db, 'users', userId, contentType, contentId)
     const docSnapshot = await getDoc(docRef);
 
@@ -121,6 +134,10 @@ export async function deleteContentFiles({userId, contentType, contentIdArr}) {
 }
 
 export async function getDocCount({userId, contentType = ''}) {
+    if (!userId) {
+        return;
+    }
+
     const coll = collection(db, 'users', userId, contentType);
     const snapshot = await getCountFromServer(coll);
     return snapshot.data().count;

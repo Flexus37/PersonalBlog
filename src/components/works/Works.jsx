@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation} from '../../services/api/apiSlice';
+import { skipToken } from '@reduxjs/toolkit/query/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getDocCount } from '../../services/firebase/FirestoreService';
 import { useSelector } from 'react-redux'
@@ -18,17 +19,27 @@ const Works = () => {
     const [worksEnded, setWorksEnded] = useState(false);
     const [showEmptyMessage, setShowEmptyMessage] = useState(true);
 
-    const {userId} = useSelector(state => state.userInfo);
+    const {currentPageId} = useSelector(state => state.userInfo);
 
     const {
         data: works = [],
         isLoading: isDataLoading,
         isError: isDataError
-    } = useGetAllContentQuery({userId, contentType: 'works', contentLimit: worksLimit});
+    } = useGetAllContentQuery(
+        currentPageId ? {
+            userId: currentPageId,
+            contentType: 'works',
+            contentLimit: worksLimit
+        } : skipToken
+    );
+
+    // useEffect(() => {
+    //     console.log(works);
+    // }, [works])
 
     useEffect(() => {
         async function fetchData() {
-            const count = await getDocCount({userId, contentType: 'works'});
+            const count = await getDocCount({userId: currentPageId, contentType: 'works'});
             setDocCount(count);
         }
 
@@ -67,8 +78,8 @@ const Works = () => {
 
     const onHandleDelete = (workId, imageIdArr) => {
         // setDeletingPostId(postId);
-        deleteContent({userId, contentType: 'works', id: workId});
-        deleteContentFiles({userId, contentType: 'works', contentIdArr: imageIdArr});
+        deleteContent({userId: currentPageId, contentType: 'works', id: workId});
+        deleteContentFiles({userId: currentPageId, contentType: 'works', contentIdArr: imageIdArr});
 
         // setDeletingPostId('');
         setIsAnimationComplete(true);

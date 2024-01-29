@@ -28,14 +28,14 @@ const Sidebar = () => {
     });
     const [showModal, setShowModal] = useState(false);
 
-    const {userId} = useSelector(state => state.userInfo);
-    const {id} = useParams();
+    const {userId, currentPageId} = useSelector(state => state.userInfo);
 
     const {
         data: userInfo,
         isLoading,
         isError
-    } = useGetUserInfoQuery(userId);
+    } = useGetUserInfoQuery(currentPageId);
+
 
     useEffect(() => {
         if (userInfo) {
@@ -146,7 +146,7 @@ const Sidebar = () => {
 
             <div className="sidebar__footer">
                 {/* <a className="btn btn--red" href="/works.html">Мои работы</a> */}
-                <Link className="btn btn--red" to={`/works/${id}`}>Мои работы</Link>
+                <Link className="btn btn--red" to={`/works/${currentPageId}`}>Мои работы</Link>
                 <button
                     className="btn btn--blue"
                     type="button"

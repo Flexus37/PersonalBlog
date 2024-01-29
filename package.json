@@ -51,6 +51,7 @@
     ]
   },
   "devDependencies": {
-    "@iconify/react": "^4.1.1"
+    "@iconify/react": "^4.1.1",
+    "lodash.debounce": "^4.0.8"
   }
 }
