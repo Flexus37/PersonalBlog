@@ -7,8 +7,8 @@ export const apiSlice = createApi({
     tagTypes: ['Posts', 'Users', 'Images', 'Stories'],
     endpoints: builder => ({
         getUsers: builder.query({
-            queryFn: async () => {
-                const users = await getUsers();
+            queryFn: async searchTerm => {
+                const users = await getUsers(searchTerm);
                 return {data: users}
             },
             providesTags: ['Users']

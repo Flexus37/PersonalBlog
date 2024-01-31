@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { useGetAllContentQuery, useDeleteContentMutation, useGetUsersQuery } from '../../services/api/apiSlice';
@@ -23,11 +23,11 @@ const Friends = () => {
         isError: isDataError
     } = useGetAllContentQuery({userId, contentType: 'friends'})
 
-    // const {
-    //     data: users = [],
-    //     isLoading: isUsersLoading,
-    //     isError: isUsersError
-    // } = useGetUsersQuery()
+    const {
+        data: users = [],
+        isLoading: isUsersLoading,
+        isError: isUsersError
+    } = useGetUsersQuery(debouncedSearchTerm);
 
     const [
         deleteContent,
@@ -37,6 +37,20 @@ const Friends = () => {
             isSuccess: isDeletingSuccess
         }
     ] = useDeleteContentMutation();
+
+    const debouncedOnChange = useCallback(
+        debounce((search) => {
+          setDebouncedSearchTerm(search);
+          console.log(search);
+        }, 500),
+        []
+    );
+
+    useEffect(() => {
+        if (searchInput) {
+          debouncedOnChange(searchInput.trim().toLowerCase());
+        }
+    }, [searchInput, debouncedOnChange]);
 
     const renderLinks = (links) => {
         if (!links || links.length === 0) {
@@ -59,7 +73,7 @@ const Friends = () => {
             return null;
         }
 
-        return data.map(item => {
+        const items = data.map(item => {
             return (
                 <motion.div
                     key={item.id}
@@ -77,11 +91,50 @@ const Friends = () => {
                     <i className="fa-solid fa-user-xmark"></i>
                 </motion.div>
             )
-        })
+        });
+
+        return (
+            <div className="friends">
+                {items}
+            </div>
+        )
     }
 
     const renderGlobalUsers = (users) => {
+        if (users.length === 0) {
+            return null;
+        }
 
+        const items = users.filter(user => user.id !== userId).map(user => {
+            return (
+                <motion.div
+                    key={user.id}
+                    className="friends__item"
+                    initial={{opacity: 0, scale: .7}}
+                    animate={{opacity: 1, scale: 1}}
+                    exit={{opacity: 0, scale: .6}}
+                    transition={{ease: "easeInOut", duration: .6}}
+                >
+                    <img src={user.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
+                    <h2 className='friends__name'>
+                        {
+                            `${user.name.charAt(0).toUpperCase() + user.name.slice(1)}
+                            ${user.surname.charAt(0).toUpperCase() + user.surname.slice(1)}`
+                        }
+                    </h2>
+                    <ul className="social">
+                        {renderLinks(user.links)}
+                    </ul>
+                    <i className="fa-solid fa-user-plus"></i>
+                </motion.div>
+            )
+        })
+
+        return (
+            <div className="friends">
+                {items}
+            </div>
+        )
     }
 
     return (
@@ -94,41 +147,41 @@ const Friends = () => {
                     placeholder='Поиск друзей'
                     value={searchInput}
                     onInput={(e) => setSearchInput(e.target.value)}
-                    />
-                {
-                    searchInput ?
-                    <div className="friends__search-clear">
-                        <i
-                        className="fa-solid fa-xmark"
-                        onClick={() => setSearchInput('')}
-                        ></i>
-                    </div>
-                    : null
-                }
+                />
+                <div className="friends__search-clear">
+                    {
+                        searchInput ? (
+                            isUsersLoading ?
+                            <Spinner /> :
+                            <i className="fa-solid fa-xmark"
+                            onClick={() => {
+                                setSearchInput('');
+                                setDebouncedSearchTerm('');
+                            }}></i>
+                        ) : null
+                    }
+                </div>
                 <button className='friends__search-btn' type='button' >
                     <i className="fa-solid fa-magnifying-glass"></i>
                 </button>
             </div>
 
+            <AnimatePresence>
+                {renderFriends(friends)}
 
-            <div className="friends">
-                <motion.div
-                    className="friends__item"
-                    initial={{opacity: 0, scale: .7}}
-                    animate={{opacity: 1, scale: 1}}
-                    exit={{opacity: 0, scale: .6}}
-                    transition={{ease: "easeInOut", duration: .6}}
-                >
-                    <img src={profileAvatar} alt="Аватарка друга" className="friends__avatar" />
-                    <h2 className='friends__name'>Дудин Алексей</h2>
-                    <ul className="social">
-                        {/* {renderLinks(links)} */}
-                    </ul>
-                    <i className="fa-solid fa-user-xmark"></i>
-                </motion.div>
-            </div>
+                {users.length !== 0 ? (
+                    <motion.h2
+                        key='second-title'
+                        className="page__title"
+                        initial={{opacity: 0, scale: .7}}
+                        animate={{opacity: 1, scale: 1}}
+                        exit={{opacity: 0, scale: .6}}
+                        transition={{ease: "easeInOut", duration: .6}}
+                    >Другие пользователи</motion.h2>
+                ) : null}
 
-            <h2 className="page__title">Другие пользователи</h2>
+                {renderGlobalUsers(users)}
+            </AnimatePresence>
 
         </>
     )

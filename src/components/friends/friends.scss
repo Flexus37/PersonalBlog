@@ -17,7 +17,8 @@
         box-shadow: 0 15px 25px rgba($black, .35);
         border-radius: 5px;
 
-        & .fa-user-xmark {
+        & .fa-user-xmark,
+        .fa-user-plus {
             margin-left: auto;
 
             font-size: 20px;

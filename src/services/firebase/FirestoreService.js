@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase/auth';
-import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit } from 'firebase/firestore';
+import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit, where } from 'firebase/firestore';
 import { db } from './FirestoreConfig';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { storage } from './FirestoreConfig';
@@ -11,10 +11,30 @@ import { storage } from './FirestoreConfig';
 //     return userSnapshot;
 // }
 
-export async function getUsers() {
-    const usersCol = collection(db, 'users');
-    const usersSnapshot = await getDocs(usersCol);
-    const usersList = usersSnapshot.docs.map(doc => doc.data());
+export async function getUsers(searchTerm) {
+    if (!searchTerm) {
+        return [];
+    }
+
+    const words = searchTerm.split(' ');
+
+    if (words.length < 2) {
+        return;
+    }
+
+    const q = query(collection(db, 'users'), where('name', '==', words[0]), where('surname', '==', words[1]))
+    const usersSnapshot = await getDocs(q);
+    const usersList = usersSnapshot.docs.map(doc => {
+        const data = doc.data();
+
+        return {
+            ...data,
+            id: doc.id
+        }
+
+    });
+    // console.log(usersList);
+
     return usersList;
 }
 
