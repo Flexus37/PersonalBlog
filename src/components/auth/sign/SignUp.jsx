@@ -69,8 +69,8 @@ const SignUp = () => {
                                             createUserInfo({
                                                 userId: user.uid,
                                                 content: {
-                                                    name: values.name,
-                                                    surname: values.surname,
+                                                    name: values.name.toLowerCase(),
+                                                    surname: values.surname.toLowerCase(),
                                                     email: values.email,
                                                     profession: 'мой персональный блог',
                                                     about: '',

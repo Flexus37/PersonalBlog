@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { useGetAllContentQuery, useDeleteContentMutation, useGetUsersQuery } from '../../services/api/apiSlice';
 import debounce from 'lodash.debounce';
+import { Icon } from '@iconify/react';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';

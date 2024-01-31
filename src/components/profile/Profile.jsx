@@ -121,8 +121,8 @@ const Profile = () => {
 
     useEffect(() => {
         if (userInfo) {
-            setName(userInfo.name);
-            setSurname(userInfo.surname);
+            setName(userInfo.name.charAt(0).toUpperCase() + userInfo.name.slice(1));
+            setSurname(userInfo.surname.charAt(0).toUpperCase() + userInfo.surname.slice(1));
             setEmail(userInfo.email);
             setProfession(userInfo.profession);
             setAbout(userInfo.about);
