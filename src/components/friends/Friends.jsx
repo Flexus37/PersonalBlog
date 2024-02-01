@@ -4,11 +4,11 @@ import { useSelector } from 'react-redux';
 import { useGetAllContentQuery, useDeleteContentMutation, useGetUsersQuery } from '../../services/api/apiSlice';
 import debounce from 'lodash.debounce';
 import { Icon } from '@iconify/react';
+import { Link } from 'react-router-dom';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
-import profileAvatar from '../../resources/img/profile-avatar.jpg';
 import './friends.scss';
 
 const Friends = () => {
@@ -130,6 +130,8 @@ const Friends = () => {
             )
         })
 
+        // console.log(items);
+
         return (
             <div className="friends">
                 {items}
@@ -137,9 +139,16 @@ const Friends = () => {
         )
     }
 
+    // console.log(users);
+
     return (
         <>
-            <h1 className="page__title">Все друзья</h1>
+            <div className="friends__header">
+                <h1 className="page__title">Все друзья</h1>
+                <Link to='/friends/requests'>
+                    <i class="fa-solid fa-bell"></i>
+                </Link>
+            </div>
 
             <div className="friends__search">
                 <input

@@ -5,6 +5,28 @@
 
 .friends {
 
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+
+        h1 {
+            margin-bottom: 0;
+        }
+
+        & .fa-bell {
+            font-size: 20px;
+            color: $white;
+            cursor: pointer;
+            transition: color .2s ease-in-out;
+
+            &:hover {
+                color: $blue;
+            }
+        }
+    }
+
     &__item {
         display: flex;
         align-items: center;
@@ -21,6 +43,24 @@
         .fa-user-plus {
             margin-left: auto;
 
+            font-size: 20px;
+            color: $white;
+            cursor: pointer;
+            transition: color .2s ease-in-out;
+
+            &:hover {
+                color: $blue;
+            }
+        }
+
+    }
+
+    &__btns {
+        display: flex;
+        margin-left: auto;
+
+        & .fa-xmark,
+        .fa-check {
             font-size: 20px;
             color: $white;
             cursor: pointer;

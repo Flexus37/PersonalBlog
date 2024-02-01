@@ -18,6 +18,8 @@ export async function getUsers(searchTerm) {
 
     const words = searchTerm.split(' ');
 
+    console.log(words);
+
     if (words.length < 2) {
         return;
     }
@@ -33,7 +35,7 @@ export async function getUsers(searchTerm) {
         }
 
     });
-    // console.log(usersList);
+    console.log(usersList);
 
     return usersList;
 }

@@ -269,6 +269,8 @@ const Profile = () => {
 
                         const newUserInfo = {
                             ...values,
+                            name: values.name.toLowerCase(),
+                            surname: values.surname.toLowerCase(),
                             links,
                             avatarImage: {
                                 id: avatarImage.id,

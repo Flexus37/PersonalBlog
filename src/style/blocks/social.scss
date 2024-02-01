@@ -1,9 +1,15 @@
 .social {
     display: flex;
     justify-content: center;
+    align-items: center;
 
     @include breakpoint($tablet-bp) {
         display: none;
+    }
+
+    &__link {
+        display: inline-block;
+        height: 100%;
     }
 
     &__icon {
@@ -20,6 +26,7 @@
 
 .social__item {
     margin-right: 1.5rem;
+    max-height: 3rem;
 }
 
 .social__item:last-child {

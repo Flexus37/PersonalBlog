@@ -8,7 +8,7 @@ import { setUserAuthentication, setUserId } from "../../services/api/userInfoSli
 
 import Header from "../header/Header";
 import Sidebar from "../sidebar/Sidebar";
-import { MainPage, ProfilePage, WorksPage, SearchResultsPage, FriendsPage } from "../pages";
+import { MainPage, ProfilePage, WorksPage, SearchResultsPage, FriendsPage, FriendRequestsPage } from "../pages";
 import { SignIn, SignUp } from "../auth";
 // import { selectAll } from "../../services/api/userInfoSlice";
 
@@ -53,6 +53,7 @@ function App() {
                         <Route path="/profile" element={<ProfilePage/>} />
                         <Route path="/works/:id" element={<WorksPage/>} />
                         <Route path="/friends" element={<FriendsPage />} />
+                        <Route path="/friends/requests" element={<FriendRequestsPage />} />
                         {/* <Route path="/single-post/:id" element={<SinglePost/>} /> */}
                         <Route path='/search-results' element={<SearchResultsPage/>} />
                       </Routes>
