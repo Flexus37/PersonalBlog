@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
-import { useGetAllContentQuery, useDeleteContentMutation, useGetUsersQuery } from '../../services/api/apiSlice';
+import { useGetAllContentQuery, useDeleteContentMutation, useGetUsersQuery, useSendFriendRequestMutation } from '../../services/api/apiSlice';
 import debounce from 'lodash.debounce';
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
@@ -28,6 +28,15 @@ const Friends = () => {
         isLoading: isUsersLoading,
         isError: isUsersError
     } = useGetUsersQuery(debouncedSearchTerm);
+
+    const [
+        sendFriendRequest,
+        {
+            isLoading: isFriendRequestSending,
+            isError: isFriendRequestError,
+            isSuccess: isFriendRequestSuccess
+        }
+    ] = useSendFriendRequestMutation();
 
     const [
         deleteContent,
@@ -125,7 +134,7 @@ const Friends = () => {
                     <ul className="social">
                         {renderLinks(user.links)}
                     </ul>
-                    <i className="fa-solid fa-user-plus"></i>
+                    <i onClick={() => sendFriendRequest({senderId: userId, receiverId: user.id})} className="fa-solid fa-user-plus"></i>
                 </motion.div>
             )
         })
@@ -146,7 +155,7 @@ const Friends = () => {
             <div className="friends__header">
                 <h1 className="page__title">Все друзья</h1>
                 <Link to='/friends/requests'>
-                    <i class="fa-solid fa-bell"></i>
+                    <i className="fa-solid fa-bell"></i>
                 </Link>
             </div>
 

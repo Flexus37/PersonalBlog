@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase/auth';
-import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit, where } from 'firebase/firestore';
+import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit, where, Timestamp } from 'firebase/firestore';
 import { db } from './FirestoreConfig';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { storage } from './FirestoreConfig';
@@ -18,7 +18,6 @@ export async function getUsers(searchTerm) {
 
     const words = searchTerm.split(' ');
 
-    console.log(words);
 
     if (words.length < 2) {
         return;
@@ -35,7 +34,6 @@ export async function getUsers(searchTerm) {
         }
 
     });
-    console.log(usersList);
 
     return usersList;
 }
@@ -51,7 +49,7 @@ export async function getUserInfo(userId = '1') {
     const data = docSnapshot.data();
 
     return {
-        id: data.id,
+        id: userId,
         ...data
     }
 }
@@ -163,6 +161,42 @@ export async function getDocCount({userId, contentType = ''}) {
     const coll = collection(db, 'users', userId, contentType);
     const snapshot = await getCountFromServer(coll);
     return snapshot.data().count;
+}
+
+export async function sendFriendRequest({senderId, receiverId}) {
+    const friendRequestCol = collection(db, 'FriendRequests');
+
+    const newRequest = {
+        senderId,
+        receiverId,
+        status: 'pending',
+        timestamp: Timestamp.now()
+    }
+
+    try {
+        await addDoc(friendRequestCol, newRequest);
+        return;
+    } catch (error) {
+        console.log('Ошибка при отправке заявки в друзья: ', error);
+        return;
+    }
+}
+
+export async function getFriendRequests(userId) {
+    const friendRequestCol = collection(db, 'FriendRequests');
+    const q = query(friendRequestCol, where('receiverId', '==', userId), where('status', '==', 'pending'));
+
+    try {
+        const querySnapshot = await getDocs(q)
+        const friendRequests = querySnapshot.docs.map(doc => doc.data());
+
+        const userInfoPromises = friendRequests.map(request => getUserInfo(request.senderId))
+        return await Promise.all(userInfoPromises);
+
+    } catch (error) {
+        console.log('Ошибка при получении заявок в друзья: ', error);
+        return [];
+    }
 }
 
 

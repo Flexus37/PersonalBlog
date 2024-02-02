@@ -1,10 +1,10 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import { getUsers, getAllContent, getUserInfo, getContent, createUserInfo, createContent, deleteContent, deleteContentFiles } from '../firebase/FirestoreService';
+import { getUsers, getAllContent, getUserInfo, getContent, createUserInfo, createContent, deleteContent, deleteContentFiles, sendFriendRequest, getFriendRequests } from '../firebase/FirestoreService';
 
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({baseUrl: '/api'}),
-    tagTypes: ['Posts', 'Users', 'Images', 'Stories'],
+    tagTypes: ['Content', 'Users', 'Images', 'Stories', 'Friends'],
     endpoints: builder => ({
         getUsers: builder.query({
             queryFn: async searchTerm => {
@@ -25,14 +25,28 @@ export const apiSlice = createApi({
                 const contentList = await getAllContent(contentObj);
                 return {data: contentList};
             },
-            providesTags: ['Posts']
+            providesTags: ['Content']
         }),
         getContent: builder.query({
             queryFn: async contentObj => {
                 const content = await getContent(contentObj);
                 return {data: content};
             },
-            providesTags: ['Stories']
+            providesTags: ['Content']
+            // providesTags: ['Stories']
+        }),
+        getFriendRequests: builder.query({
+            queryFn: async userId => {
+                const requestsList = await getFriendRequests(userId);
+                return {data: requestsList};
+            },
+            providesTags: ['Friends']
+        }),
+        sendFriendRequest: builder.mutation({
+            queryFn: async data => {
+                return await sendFriendRequest(data);
+            },
+            invalidatesTags: ['Friends']
         }),
         createUserInfo: builder.mutation({
             queryFn: async userInfoObj => {
@@ -44,13 +58,13 @@ export const apiSlice = createApi({
             queryFn: async contentObj => {
                 return await createContent(contentObj);
             },
-            invalidatesTags: ['Posts']
+            invalidatesTags: ['Content']
         }),
         deleteContent: builder.mutation({
             queryFn: async deleteObj => {
                 return await deleteContent(deleteObj);
             },
-            invalidatesTags: ['Posts']
+            invalidatesTags: ['Content']
         }),
         deleteContentFiles: builder.mutation({
             queryFn: async deleteContentObj => {
@@ -67,6 +81,8 @@ export const {
     useGetContentQuery,
     useGetAllContentQuery,
     useGetUserInfoQuery,
+    useGetFriendRequestsQuery,
+    useSendFriendRequestMutation,
     useCreateContentMutation,
     useCreateUserInfoMutation,
     useDeleteContentMutation,

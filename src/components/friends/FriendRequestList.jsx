@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDeleteContentMutation } from "../../services/api/apiSlice";
+import { useDeleteContentMutation, useGetFriendRequestsQuery } from "../../services/api/apiSlice";
 import { useSelector } from 'react-redux';
 import { Icon } from '@iconify/react';
 
@@ -12,6 +12,12 @@ import './friends.scss';
 const FriendRequestList = () => {
 
     const {userId} = useSelector(state => state.userInfo);
+
+    const {
+        data: friendRequests = [],
+        isLoading: isFriendRequestsLoading,
+        isError: isFriendRequestsError
+    } = useGetFriendRequestsQuery(userId)
 
     const [
         deleteContent,
@@ -38,12 +44,13 @@ const FriendRequestList = () => {
         })
     }
 
-    const renderRequests = (data) => {
+    const renderFriendRequests = (data) => {
         if (!data || data.length === 0) {
             return null;
         }
 
         const items = data.map(item => {
+            console.log(item);
             return (
                 <motion.div
                     key={item.id}
@@ -59,8 +66,8 @@ const FriendRequestList = () => {
                         {renderLinks(item.links)}
                     </ul>
                     <div className="friends__btns">
-                        <i class="fa-solid fa-check"></i>
-                        <i class="fa-solid fa-xmark"></i>
+                        <i className="fa-solid fa-check"></i>
+                        <i className="fa-solid fa-xmark"></i>
                     </div>
                 </motion.div>
             )
@@ -74,7 +81,13 @@ const FriendRequestList = () => {
     }
 
     return (
-        <h1 className="page__title">Заявки в друзья</h1>
+        <>
+            <h1 className="page__title">Заявки в друзья</h1>
+
+            <AnimatePresence>
+                {renderFriendRequests(friendRequests)}
+            </AnimatePresence>
+        </>
 
     )
 }
