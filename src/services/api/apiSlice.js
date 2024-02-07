@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import { getUsers, getAllContent, getUserInfo, getContent, createUserInfo, createContent, deleteContent, deleteContentFiles, sendFriendRequest, getFriendRequests } from '../firebase/FirestoreService';
+import { getUsers, getAllContent, getUserInfo, getContent, createUserInfo, createContent, deleteContent, deleteContentFiles, sendFriendRequest, getFriendRequests, acceptFriendRequest } from '../firebase/FirestoreService';
 
 export const apiSlice = createApi({
     reducerPath: 'api',
@@ -48,6 +48,12 @@ export const apiSlice = createApi({
             },
             invalidatesTags: ['Friends']
         }),
+        acceptFriendRequest: builder.mutation({
+            queryFn: async data => {
+                return await acceptFriendRequest(data);
+            },
+            invalidatesTags: ['Friends']
+        }),
         createUserInfo: builder.mutation({
             queryFn: async userInfoObj => {
                 return await createUserInfo(userInfoObj);
@@ -83,6 +89,7 @@ export const {
     useGetUserInfoQuery,
     useGetFriendRequestsQuery,
     useSendFriendRequestMutation,
+    useAcceptFriendRequestMutation,
     useCreateContentMutation,
     useCreateUserInfoMutation,
     useDeleteContentMutation,

@@ -34,7 +34,7 @@ const Sidebar = () => {
         data: userInfo,
         isLoading,
         isError
-    } = useGetUserInfoQuery(currentPageId);
+    } = useGetUserInfoQuery(userId);
 
 
     useEffect(() => {

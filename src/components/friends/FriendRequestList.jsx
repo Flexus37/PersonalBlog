@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDeleteContentMutation, useGetFriendRequestsQuery } from "../../services/api/apiSlice";
+import { useDeleteContentMutation, useGetFriendRequestsQuery, useAcceptFriendRequestMutation } from "../../services/api/apiSlice";
 import { useSelector } from 'react-redux';
 import { Icon } from '@iconify/react';
 
@@ -18,6 +18,14 @@ const FriendRequestList = () => {
         isLoading: isFriendRequestsLoading,
         isError: isFriendRequestsError
     } = useGetFriendRequestsQuery(userId)
+
+    const [
+        acceptFriendRequest,
+        {
+            isLoading: isAcceptingFriendRequest,
+            isError: isErrorAcceptFriendRequest
+        }
+    ] = useAcceptFriendRequestMutation();
 
     const [
         deleteContent,
@@ -50,7 +58,6 @@ const FriendRequestList = () => {
         }
 
         const items = data.map(item => {
-            console.log(item);
             return (
                 <motion.div
                     key={item.id}
@@ -61,12 +68,17 @@ const FriendRequestList = () => {
                     transition={{ease: "easeInOut", duration: .6}}
                 >
                     <img src={item.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
-                    <h2 className='friends__name'>{`${item.name} ${item.surname}`}</h2>
+                    <h2 className='friends__name'>
+                        {
+                            `${item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+                            ${item.surname.charAt(0).toUpperCase() + item.surname.slice(1)}`
+                        }
+                    </h2>
                     <ul className="social">
                         {renderLinks(item.links)}
                     </ul>
                     <div className="friends__btns">
-                        <i className="fa-solid fa-check"></i>
+                        <i onClick={() => acceptFriendRequest({userId, friendId: item.id, friendInfo: item})} className="fa-solid fa-check"></i>
                         <i className="fa-solid fa-xmark"></i>
                     </div>
                 </motion.div>

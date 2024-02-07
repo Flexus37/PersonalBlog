@@ -177,7 +177,7 @@ export async function sendFriendRequest({senderId, receiverId}) {
         await addDoc(friendRequestCol, newRequest);
         return;
     } catch (error) {
-        console.log('Ошибка при отправке заявки в друзья: ', error);
+        console.error('Ошибка при отправке заявки в друзья: ', error);
         return;
     }
 }
@@ -194,12 +194,42 @@ export async function getFriendRequests(userId) {
         return await Promise.all(userInfoPromises);
 
     } catch (error) {
-        console.log('Ошибка при получении заявок в друзья: ', error);
+        console.error('Ошибка при получении заявок в друзья: ', error);
         return [];
     }
 }
 
+export async function acceptFriendRequest({userId, friendId, friendInfo}) {
+    const userCol = collection(db, 'users', userId, 'friends');
+    const friendCol = collection(db, 'users', friendId, 'friends');
+    const requestQuery = query(collection(db, 'FriendRequests'), where('senderId', '==', friendId));
 
+    try {
+        const userInfo = await getUserInfo(userId);
+        // const {id, ...userInfoWithoutId} = userInfo;
+        // const userDocRef = await addDoc(userCol, userInfo);
+        await addDoc(userCol, friendInfo);
+
+        // const {id, ...friendInfoWithoutId} = friendInfo;
+        // const friendDocRef = await addDoc(friendCol, friendInfo)
+        await addDoc(friendCol, userInfo)
+
+        const requestSnapshot = await getDocs(requestQuery);
+        const requestId = requestSnapshot.docs.data();
+        console.log(requestId);
+        await deleteDoc(doc(db, 'FriendRequests', requestId));
+
+        return;
+    } catch (error) {
+        console.error('Ошибка при одобрении заявки', error)
+        return;
+    }
+
+}
+
+export async function rejectFriendRequest() {
+
+}
 
 // apiSlice.endpoints.getPosts.initiate = getPosts;
 
