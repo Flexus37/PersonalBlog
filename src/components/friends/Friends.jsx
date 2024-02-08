@@ -148,8 +148,6 @@ const Friends = () => {
         )
     }
 
-    // console.log(users);
-
     return (
         <>
             <div className="friends__header">

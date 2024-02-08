@@ -70,8 +70,10 @@ export async function getAllContent({userId, contentType, contentLimit}) {
 
     if (contentLimit) {
         q = query(collection(db, 'users', userId, contentType), orderBy('time', 'desc'), limit(contentLimit));
-    } else {
+    } else if (contentType !== 'friends') {
         q = query(collection(db, 'users', userId, contentType), orderBy('time', 'desc'));
+    } else {
+        q = query(collection(db, 'users', userId, contentType));
     }
 
     const docSnapshot = await getDocs(q);
@@ -174,10 +176,10 @@ export async function sendFriendRequest({senderId, receiverId}) {
     }
 
     try {
-        await addDoc(friendRequestCol, newRequest);
-        return;
+        const docRef = await addDoc(friendRequestCol, newRequest);
+        return docRef.id;
     } catch (error) {
-        console.error('Ошибка при отправке заявки в друзья: ', error);
+        console.log('Ошибка при отправке заявки в друзья: ', error);
         return;
     }
 }
@@ -194,34 +196,28 @@ export async function getFriendRequests(userId) {
         return await Promise.all(userInfoPromises);
 
     } catch (error) {
-        console.error('Ошибка при получении заявок в друзья: ', error);
+        console.log('Ошибка при получении заявок в друзья: ', error);
         return [];
     }
 }
 
 export async function acceptFriendRequest({userId, friendId, friendInfo}) {
-    const userCol = collection(db, 'users', userId, 'friends');
-    const friendCol = collection(db, 'users', friendId, 'friends');
+    // const userCol = collection(db, 'users', userId, 'friends');
+    // const friendCol = collection(db, 'users', friendId, 'friends');
     const requestQuery = query(collection(db, 'FriendRequests'), where('senderId', '==', friendId));
 
     try {
         const userInfo = await getUserInfo(userId);
-        // const {id, ...userInfoWithoutId} = userInfo;
-        // const userDocRef = await addDoc(userCol, userInfo);
-        await addDoc(userCol, friendInfo);
 
-        // const {id, ...friendInfoWithoutId} = friendInfo;
-        // const friendDocRef = await addDoc(friendCol, friendInfo)
-        await addDoc(friendCol, userInfo)
+        await setDoc(doc(db, 'users', userId, 'friends', friendId), friendInfo);
+        await setDoc(doc(db, 'users', friendId, 'friends', userId), userInfo)
 
         const requestSnapshot = await getDocs(requestQuery);
-        const requestId = requestSnapshot.docs.data();
-        console.log(requestId);
+        const requestId = requestSnapshot.docs[0].id;
         await deleteDoc(doc(db, 'FriendRequests', requestId));
-
         return;
     } catch (error) {
-        console.error('Ошибка при одобрении заявки', error)
+        console.log('Ошибка при одобрении заявки', error)
         return;
     }
 
