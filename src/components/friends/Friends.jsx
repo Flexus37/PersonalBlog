@@ -5,6 +5,7 @@ import { useGetAllContentQuery, useDeleteContentMutation, useGetUsersQuery, useS
 import debounce from 'lodash.debounce';
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
+import fixUserName from '../../services/fixUserName';
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -93,7 +94,7 @@ const Friends = () => {
                     transition={{ease: "easeInOut", duration: .6}}
                 >
                     <img src={item.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
-                    <h2 className='friends__name'>{`${item.name} ${item.surname}`}</h2>
+                    <h2 className='friends__name'>{fixUserName(item.name, item.surname)}</h2>
                     <ul className="social">
                         {renderLinks(item.links)}
                     </ul>
@@ -125,12 +126,7 @@ const Friends = () => {
                     transition={{ease: "easeInOut", duration: .6}}
                 >
                     <img src={user.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
-                    <h2 className='friends__name'>
-                        {
-                            `${user.name.charAt(0).toUpperCase() + user.name.slice(1)}
-                            ${user.surname.charAt(0).toUpperCase() + user.surname.slice(1)}`
-                        }
-                    </h2>
+                    <h2 className='friends__name'>{fixUserName(user.name, user.surname)}</h2>
                     <ul className="social">
                         {renderLinks(user.links)}
                     </ul>

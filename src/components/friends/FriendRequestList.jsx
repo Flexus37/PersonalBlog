@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useDeleteContentMutation, useGetFriendRequestsQuery, useAcceptFriendRequestMutation } from "../../services/api/apiSlice";
 import { useSelector } from 'react-redux';
 import { Icon } from '@iconify/react';
+import fixUserName from "../../services/fixUserName";
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -68,12 +69,7 @@ const FriendRequestList = () => {
                     transition={{ease: "easeInOut", duration: .6}}
                 >
                     <img src={item.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
-                    <h2 className='friends__name'>
-                        {
-                            `${item.name.charAt(0).toUpperCase() + item.name.slice(1)}
-                            ${item.surname.charAt(0).toUpperCase() + item.surname.slice(1)}`
-                        }
-                    </h2>
+                    <h2 className='friends__name'>{fixUserName(item.name, item.surname)}</h2>
                     <ul className="social">
                         {renderLinks(item.links)}
                     </ul>
