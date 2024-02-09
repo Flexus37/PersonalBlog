@@ -82,7 +82,7 @@ const FriendRequestList = () => {
                         {renderLinks(item.links)}
                     </ul>
                     <div className="friends__btns">
-                        <i onClick={() => acceptFriendRequest({userId, friendId: item.id, friendInfo: item})} className="fa-solid fa-check"></i>
+                        <i onClick={() => acceptFriendRequest({userId, friendId: item.id, friendInfo: item, requestId: item.requestId})} className="fa-solid fa-check"></i>
                         <i onClick={() => rejectFriendRequest(item.requestId)} className="fa-solid fa-xmark"></i>
                     </div>
                 </motion.div>

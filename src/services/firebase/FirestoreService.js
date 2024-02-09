@@ -206,19 +206,16 @@ export async function getFriendRequests(userId) {
     }
 }
 
-export async function acceptFriendRequest({userId, friendId, friendInfo}) {
+export async function acceptFriendRequest({userId, friendId, friendInfo, requestId}) {
     // const userCol = collection(db, 'users', userId, 'friends');
     // const friendCol = collection(db, 'users', friendId, 'friends');
-    const requestQuery = query(collection(db, 'FriendRequests'), where('senderId', '==', friendId));
+    // const requestQuery = query(collection(db, 'FriendRequests'), where('senderId', '==', friendId));
 
     try {
         const userInfo = await getUserInfo(userId);
 
         await setDoc(doc(db, 'users', userId, 'friends', friendId), friendInfo);
         await setDoc(doc(db, 'users', friendId, 'friends', userId), userInfo)
-
-        const requestSnapshot = await getDocs(requestQuery);
-        const requestId = requestSnapshot.docs[0].id;
         await deleteDoc(doc(db, 'FriendRequests', requestId));
     } catch (error) {
         console.log('Ошибка при одобрении заявки', error)

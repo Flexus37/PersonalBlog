@@ -52,13 +52,13 @@ export const apiSlice = createApi({
             queryFn: async data => {
                 return await acceptFriendRequest(data);
             },
-            invalidatesTags: ['FriendRequests']
+            invalidatesTags: ['Friends', 'FriendRequests']
         }),
         rejectFriendRequest: builder.mutation({
             queryFn: async data => {
                 return await rejectFriendRequest(data);
             },
-            invalidatesTags: ['FriendRequests']
+            invalidatesTags: ['Friends', 'FriendRequests']
         }),
         createUserInfo: builder.mutation({
             queryFn: async userInfoObj => {
