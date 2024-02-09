@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDeleteContentMutation, useGetFriendRequestsQuery, useAcceptFriendRequestMutation } from "../../services/api/apiSlice";
+import { useDeleteContentMutation, useGetFriendRequestsQuery, useAcceptFriendRequestMutation, useRejectFriendRequestMutation } from "../../services/api/apiSlice";
 import { useSelector } from 'react-redux';
 import { Icon } from '@iconify/react';
 import fixUserName from "../../services/fixUserName";
@@ -27,6 +27,14 @@ const FriendRequestList = () => {
             isError: isErrorAcceptFriendRequest
         }
     ] = useAcceptFriendRequestMutation();
+
+    const [
+        rejectFriendRequest,
+        {
+            isLoading: isRejectingFriendRequest,
+            isError: isErrorRejectFriendRequest
+        }
+    ] = useRejectFriendRequestMutation()
 
     const [
         deleteContent,
@@ -75,7 +83,7 @@ const FriendRequestList = () => {
                     </ul>
                     <div className="friends__btns">
                         <i onClick={() => acceptFriendRequest({userId, friendId: item.id, friendInfo: item})} className="fa-solid fa-check"></i>
-                        <i className="fa-solid fa-xmark"></i>
+                        <i onClick={() => rejectFriendRequest(item.requestId)} className="fa-solid fa-xmark"></i>
                     </div>
                 </motion.div>
             )

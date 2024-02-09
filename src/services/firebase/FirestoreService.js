@@ -180,7 +180,7 @@ export async function sendFriendRequest({senderId, receiverId}) {
         return docRef.id;
     } catch (error) {
         console.log('Ошибка при отправке заявки в друзья: ', error);
-        return;
+        return null;
     }
 }
 
@@ -190,9 +190,14 @@ export async function getFriendRequests(userId) {
 
     try {
         const querySnapshot = await getDocs(q)
-        const friendRequests = querySnapshot.docs.map(doc => doc.data());
-
-        const userInfoPromises = friendRequests.map(request => getUserInfo(request.senderId))
+        const userInfoPromises = querySnapshot.docs.map(async (doc) => {
+            const request = doc.data();
+            const userInfo = await getUserInfo(request.senderId);
+            return {
+                ...userInfo,
+                requestId: doc.id
+            };
+        });
         return await Promise.all(userInfoPromises);
 
     } catch (error) {
@@ -215,17 +220,35 @@ export async function acceptFriendRequest({userId, friendId, friendInfo}) {
         const requestSnapshot = await getDocs(requestQuery);
         const requestId = requestSnapshot.docs[0].id;
         await deleteDoc(doc(db, 'FriendRequests', requestId));
-        return;
     } catch (error) {
         console.log('Ошибка при одобрении заявки', error)
-        return;
+    } finally {
+        return userId;
     }
-
 }
 
-export async function rejectFriendRequest() {
-
+export async function rejectFriendRequest(requestId) {
+    console.log(requestId);
+    try {
+        await deleteDoc(doc(db, 'FriendRequests', requestId));
+    } catch (error) {
+        console.log('Ошибка при отклонении запроса в друзья', error);
+    } finally {
+        return requestId;
+    }
 }
+
+export async function removeFromFriends({userId, friendId}) {
+    try {
+        await deleteContent({userId, contentType: 'friends', id: friendId});
+        await deleteContent({userId: friendId, contentType: 'friends', id: userId})
+    } catch (error) {
+        console.log('Ошибка при удалении друзей', error);
+    } finally {
+        return userId;
+    }
+}
+
 
 // apiSlice.endpoints.getPosts.initiate = getPosts;
 

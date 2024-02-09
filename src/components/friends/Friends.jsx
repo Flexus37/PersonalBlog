@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
-import { useGetAllContentQuery, useDeleteContentMutation, useGetUsersQuery, useSendFriendRequestMutation } from '../../services/api/apiSlice';
+import { useGetAllContentQuery, useRemoveFromFriendsMutation, useGetUsersQuery, useSendFriendRequestMutation } from '../../services/api/apiSlice';
 import debounce from 'lodash.debounce';
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
@@ -40,13 +40,13 @@ const Friends = () => {
     ] = useSendFriendRequestMutation();
 
     const [
-        deleteContent,
+        removeFromFriends,
         {
             isLoading: isDeleting,
             isError: isDeletingError,
             isSuccess: isDeletingSuccess
         }
-    ] = useDeleteContentMutation();
+    ] = useRemoveFromFriendsMutation();
 
     const debouncedOnChange = useCallback(
         debounce((search) => {
@@ -98,13 +98,13 @@ const Friends = () => {
                     <ul className="social">
                         {renderLinks(item.links)}
                     </ul>
-                    <i className="fa-solid fa-user-xmark"></i>
+                    <i onClick={() => removeFromFriends({userId, friendId: item.id})} className="fa-solid fa-user-xmark"></i>
                 </motion.div>
             )
         });
 
         return (
-            <div className="friends">
+            <div key='friends' className="friends">
                 {items}
             </div>
         )
@@ -115,7 +115,9 @@ const Friends = () => {
             return null;
         }
 
-        const items = users.filter(user => user.id !== userId).map(user => {
+        const friendsIds = friends.map(friend => friend.id);
+
+        const items = users.filter(user => user.id !== userId && !friendsIds.includes(user.id)).map(user => {
             return (
                 <motion.div
                     key={user.id}
@@ -134,8 +136,6 @@ const Friends = () => {
                 </motion.div>
             )
         })
-
-        // console.log(items);
 
         return (
             <div className="friends">

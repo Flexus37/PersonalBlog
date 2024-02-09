@@ -1,10 +1,10 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import { getUsers, getAllContent, getUserInfo, getContent, createUserInfo, createContent, deleteContent, deleteContentFiles, sendFriendRequest, getFriendRequests, acceptFriendRequest } from '../firebase/FirestoreService';
+import { getUsers, getAllContent, getUserInfo, getContent, createUserInfo, createContent, deleteContent, deleteContentFiles, sendFriendRequest, getFriendRequests, acceptFriendRequest, removeFromFriends, rejectFriendRequest } from '../firebase/FirestoreService';
 
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({baseUrl: '/api'}),
-    tagTypes: ['Content', 'Users', 'Images', 'Stories', 'Friends'],
+    tagTypes: ['Content', 'Users', 'Images', 'Stories', 'Friends', 'FriendRequests'],
     endpoints: builder => ({
         getUsers: builder.query({
             queryFn: async searchTerm => {
@@ -25,7 +25,7 @@ export const apiSlice = createApi({
                 const contentList = await getAllContent(contentObj);
                 return {data: contentList};
             },
-            providesTags: ['Content']
+            providesTags: ['Content', 'Friends']
         }),
         getContent: builder.query({
             queryFn: async contentObj => {
@@ -40,19 +40,25 @@ export const apiSlice = createApi({
                 const requestsList = await getFriendRequests(userId);
                 return {data: requestsList};
             },
-            providesTags: ['Friends']
+            providesTags: ['FriendRequests']
         }),
         sendFriendRequest: builder.mutation({
             queryFn: async data => {
                 return await sendFriendRequest(data);
             },
-            invalidatesTags: ['Friends']
+            invalidatesTags: ['FriendRequests']
         }),
         acceptFriendRequest: builder.mutation({
             queryFn: async data => {
                 return await acceptFriendRequest(data);
             },
-            invalidatesTags: ['Friends']
+            invalidatesTags: ['FriendRequests']
+        }),
+        rejectFriendRequest: builder.mutation({
+            queryFn: async data => {
+                return await rejectFriendRequest(data);
+            },
+            invalidatesTags: ['FriendRequests']
         }),
         createUserInfo: builder.mutation({
             queryFn: async userInfoObj => {
@@ -77,6 +83,12 @@ export const apiSlice = createApi({
                 return await deleteContentFiles(deleteContentObj);
             },
             invalidatesTags: ['Images']
+        }),
+        removeFromFriends: builder.mutation({
+            queryFn: async data => {
+                return await removeFromFriends(data);
+            },
+            invalidatesTags: ['Friends']
         })
     })
 
@@ -90,8 +102,10 @@ export const {
     useGetFriendRequestsQuery,
     useSendFriendRequestMutation,
     useAcceptFriendRequestMutation,
+    useRejectFriendRequestMutation,
     useCreateContentMutation,
     useCreateUserInfoMutation,
     useDeleteContentMutation,
-    useDeleteContentFilesMutation
+    useDeleteContentFilesMutation,
+    useRemoveFromFriendsMutation
 } = apiSlice;
