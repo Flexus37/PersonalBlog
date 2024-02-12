@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
-import { useGetAllContentQuery, useRemoveFromFriendsMutation, useGetUsersQuery, useSendFriendRequestMutation } from '../../services/api/apiSlice';
+import { useGetAllContentQuery, useRemoveFromFriendsMutation, useGetUsersQuery, useSendFriendRequestMutation, useGetFriendRequestsCountQuery } from '../../services/api/apiSlice';
 import debounce from 'lodash.debounce';
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
@@ -20,8 +20,8 @@ const Friends = () => {
 
     const {
         data: friends = [],
-        isLoading: isDataLoading,
-        isError: isDataError
+        isLoading: isFriendsLoading,
+        isError: isFriendsError
     } = useGetAllContentQuery({userId, contentType: 'friends'})
 
     const {
@@ -29,6 +29,10 @@ const Friends = () => {
         isLoading: isUsersLoading,
         isError: isUsersError
     } = useGetUsersQuery(debouncedSearchTerm);
+
+    const {
+        data: friendRequestsCount = 0
+    } = useGetFriendRequestsCountQuery(userId);
 
     const [
         sendFriendRequest,
@@ -79,6 +83,10 @@ const Friends = () => {
     }
 
     const renderFriends = (data) => {
+        if (isFriendsLoading) {
+            return <Spinner lottiestyle={{'height': '300px'}} />;
+        }
+
         if (!data || data.length === 0) {
             return null;
         }
@@ -148,8 +156,15 @@ const Friends = () => {
         <>
             <div className="friends__header">
                 <h1 className="page__title">Все друзья</h1>
-                <Link to='/friends/requests'>
+                <Link className="friends__requests" to='/friends/requests'>
+                    <h2>Заявки</h2>
                     <i className="fa-solid fa-bell"></i>
+                    {
+                        friendRequestsCount !== 0 &&
+                        friendRequestsCount !== null ?
+                        <p>{friendRequestsCount}</p> :
+                        null
+                    }
                 </Link>
             </div>
 

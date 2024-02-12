@@ -206,6 +206,19 @@ export async function getFriendRequests(userId) {
     }
 }
 
+export async function getFriendRequestsCount(userId) {
+    const friendRequestCol = collection(db, 'FriendRequests');
+    const q = query(friendRequestCol, where('receiverId', '==', userId), where('status', '==', 'pending'));
+
+    try {
+        const snapshot = await getCountFromServer(q);
+        return snapshot.data().count;
+    } catch (error) {
+        console.log('Ошабка при получении кол-во заявок в друзья', error);
+        return null;
+    }
+}
+
 export async function acceptFriendRequest({userId, friendId, friendInfo, requestId}) {
     // const userCol = collection(db, 'users', userId, 'friends');
     // const friendCol = collection(db, 'users', friendId, 'friends');
