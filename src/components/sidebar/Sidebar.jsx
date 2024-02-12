@@ -28,7 +28,7 @@ const Sidebar = () => {
     });
     const [showModal, setShowModal] = useState(false);
 
-    const {userId, currentPageId} = useSelector(state => state.userInfo);
+    const {userId, currentPageId, isSidebarOpened} = useSelector(state => state.userInfo);
 
     const {
         data: userInfo,
@@ -77,7 +77,7 @@ const Sidebar = () => {
     }
 
     return (
-        <aside className="sidebar" id="sidebar">
+        <aside className={isSidebarOpened ? 'sidebar show-sidebar' : 'sidebar'} id="sidebar">
             {
                 showModal ?
                 createPortal(

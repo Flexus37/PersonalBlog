@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUserAuthentication } from '../../services/api/userInfoSlice';
+import { setUserAuthentication, setSidebarOpening } from '../../services/api/userInfoSlice';
 import { auth } from '../../services/firebase/FirestoreConfig';
 import { signOut } from 'firebase/auth';
 
@@ -8,7 +8,7 @@ import { signOut } from 'firebase/auth';
 import './header.scss';
 
 const Header = () => {
-    const {userId} = useSelector(state => state.userInfo);
+    const {userId, isSidebarOpened} = useSelector(state => state.userInfo);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -23,6 +23,10 @@ const Header = () => {
             })
     }
 
+    const onHandleSidebarOpen = () => {
+        dispatch(setSidebarOpening(!isSidebarOpened));
+    }
+
     return (
         <header className='header'>
             <div className="header__left">
@@ -34,7 +38,6 @@ const Header = () => {
                                 'nav__link active' : 'nav__link'
                                 }
                                 to={`/blog/${userId}`}
-                                href='#'
                             >Главная</NavLink>
                         </li>
                         <li className="nav__item">
@@ -48,17 +51,17 @@ const Header = () => {
 
                             <ul className="subnav">
                                 <li>
-                                    <NavLink className='subnav__link' to='/friends' href="#">Все друзья</NavLink>
+                                    <NavLink className='subnav__link' to='/friends'>Все друзья</NavLink>
                                 </li>
                                 <li>
-                                    <NavLink className='subnav__link' to='/friends/requests' href="#">Заявки в друзья</NavLink>
+                                    <NavLink className='subnav__link' to='/friends/requests'>Заявки в друзья</NavLink>
                                 </li>
                             </ul>
                         </li>
                     </ul>
                 </nav>
 
-                <button className="burger  active" type="button" id="sidebarToggle">
+                <button onClick={onHandleSidebarOpen} className={isSidebarOpened ? 'burger show-sidebar' : 'burger'} type="button" id="sidebarToggle">
                     <span>Открыть навигацию</span>
                 </button>
             </div>

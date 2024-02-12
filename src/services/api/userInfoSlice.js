@@ -5,7 +5,8 @@ const initialState = userInfoAdapter.getInitialState({
     userId: null,
     currentPageId: null,
     isAuthenticated: false,
-    loadingStatus: 'idle'
+    loadingStatus: 'idle',
+    isSidebarOpened: false
 });
 
 const userInfoSlice = createSlice({
@@ -20,6 +21,9 @@ const userInfoSlice = createSlice({
         },
         setCurrentPageId: (state, action) => {
             state.currentPageId = action.payload
+        },
+        setSidebarOpening: (state, action) => {
+            state.isSidebarOpened = action.payload
         }
     }
 })
@@ -32,5 +36,6 @@ export default reducer;
 export const {
     setUserAuthentication,
     setUserId,
-    setCurrentPageId
+    setCurrentPageId,
+    setSidebarOpening
 } = actions;
