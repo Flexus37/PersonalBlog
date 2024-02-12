@@ -37,22 +37,6 @@ const Header = () => {
                                 href='#'
                             >Главная</NavLink>
                         </li>
-                        {/* <li className="nav__item">
-                            <a className="nav__link has-subnav" href="#">Статьи</a>
-
-                            <ul className="subnav">
-                                <li>
-                                    <a className="subnav__link" href="#">Создание сайтов</a>
-                                </li>
-                                <li>
-                                    <a className="subnav__link" href="#">Интернет-маркетинг</a>
-                                </li>
-                                <li>
-                                    <a className="subnav__link" href="#">Продвижение видео</a>
-                                </li>
-                            </ul>
-
-                        </li> */}
                         <li className="nav__item">
                             <NavLink
                                 className={({isActive}) => isActive ?
@@ -61,13 +45,16 @@ const Header = () => {
                                 to='/friends'
                                 href='#'
                             >Друзья</NavLink>
+
+                            <ul className="subnav">
+                                <li>
+                                    <NavLink className='subnav__link' to='/friends' href="#">Все друзья</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink className='subnav__link' to='/friends/requests' href="#">Заявки в друзья</NavLink>
+                                </li>
+                            </ul>
                         </li>
-                        <li className="nav__item">
-                            <a className="nav__link" href="/text.html">Обо мне</a>
-                        </li>
-                        {/* <li className="nav__item">
-                            <a className="nav__link" href="/text.html">Реклама</a>
-                        </li> */}
                     </ul>
                 </nav>
 
