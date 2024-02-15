@@ -10,13 +10,14 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import EmptyMessage from '../emptyMessage/EmptyMessage';
 
-const Posts = () => {
+const Posts = ({pageId}) => {
 
     // const [deletingPostId, setDeletingPostId] = useState('');
     const [isAnimationComplete, setIsAnimationComplete] = useState(true);
     const [postsLimit, setPostsLimit] = useState(10);
     const [docCount, setDocCount] = useState(null);
     const [postEnded, setPostEnded] = useState(false);
+    const [isUserOwnPage, setIsUserOwnPage] = useState(false);
     const [showEmptyMessage, setShowEmptyMessage] = useState(true);
 
     const {userId} = useSelector(state => state.userInfo);
@@ -25,11 +26,17 @@ const Posts = () => {
         data: posts = [],
         isLoading: isDataLoading,
         isError: isDataError
-    } = useGetAllContentQuery({userId, contentType: 'posts', contentLimit: postsLimit});
+    } = useGetAllContentQuery({userId: pageId, contentType: 'posts', contentLimit: postsLimit});
+
+    useEffect(() => {
+        if (pageId === userId) {
+            setIsUserOwnPage(true);
+        }
+    }, [])
 
     useEffect(() => {
         async function fetchData() {
-            const count = await getDocCount({userId, contentType: 'posts'});
+            const count = await getDocCount({userId: pageId, contentType: 'posts'});
             setDocCount(count);
         }
 
@@ -67,12 +74,14 @@ const Posts = () => {
     ] = useDeleteContentFilesMutation();
 
     const onHandleDelete = (postId, imageIdArr) => {
-        // setDeletingPostId(postId);
-        deleteContent({userId, contentType: 'posts', id: postId});
-        deleteContentFiles({userId, contentType: 'posts', contentIdArr: imageIdArr});
+        if (isUserOwnPage) {
+            // setDeletingPostId(postId);
+            deleteContent({userId, contentType: 'posts', id: postId});
+            deleteContentFiles({userId, contentType: 'posts', contentIdArr: imageIdArr});
 
-        // setDeletingPostId('');
-        setIsAnimationComplete(true);
+            // setDeletingPostId('');
+            setIsAnimationComplete(true);
+        }
     }
 
     const onHandleLoadMore = () => {
@@ -180,21 +189,24 @@ const Posts = () => {
                         transition={{ease: "easeInOut", duration: .3}}
                         onAnimationStart={() => setIsAnimationComplete(false)}
                         onAnimationComplete={() => {
-                            console.log('AnimationComplete!');
                             setIsAnimationComplete(true);
                             }}>
                         {
                             // isPostDeleting ? <Spinner/> :
                             <>
-                                <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i>
+                                {
+                                    isUserOwnPage ?
+                                    <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i> :
+                                    null
+                                }
                                 {
                                     isPostImages ?
-                                    renderPostImages(item.contentImages)
-                                    : null
+                                    renderPostImages(item.contentImages) :
+                                    null
                                 }
                                 <div className="post__content">
                                     <h2 className="post__title">
-                                        <a href="post.html">{item.article}</a>
+                                        <a href="#">{item.article}</a>
                                     </h2>
                                     <p className="post__description">{item.description}</p>
                                 </div>
@@ -204,11 +216,11 @@ const Posts = () => {
                                             <time dateTime="2020-06-21">{item.time}</time>
                                         </li>
                                         <li className="post__data-item">
-                                            <a href="post.html">{tags}</a>
+                                            <a href="#">{tags}</a>
                                         </li>
                                     </ul>
 
-                                    <a className="post__read" href="post.html">читать</a>
+                                    <a className="post__read" href="#">читать</a>
                                 </div>
                             </>
                         }

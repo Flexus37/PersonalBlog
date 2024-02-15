@@ -10,13 +10,14 @@ import StoryModal from '../modals/StoryModal';
 
 import './stories.scss';
 
-const Stories = () => {
+const Stories = ({pageId}) => {
     const [isAddContent, setIsAddContent] = useState(false);
 
     const [storiesWidth, setStoriesWidth] = useState(0);
     const [storiesOffset, setStoriesOffset] = useState(0);
     const [storiesIndex, setStoriesIndex] = useState(0);
     const [totalStoriesSlides, setTotalStoriesSlides] = useState(1);
+    const [isUserOwnPage, setIsUserOwnPage] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
     const [modalStoryId, setModalStoryId] = useState(null);
@@ -30,7 +31,7 @@ const Stories = () => {
         data: stories = [],
         isLoading: isContentLoading,
         isError: isContentError
-    } = useGetAllContentQuery({userId, contentType: 'stories'});
+    } = useGetAllContentQuery({userId: pageId, contentType: 'stories'});
 
     const [
         deleteContent,
@@ -49,6 +50,9 @@ const Stories = () => {
      ] = useDeleteContentFilesMutation();
 
     useEffect(() => {
+        if (pageId === userId) {
+            setIsUserOwnPage(true);
+        }
         setStoriesWidth(storiesWrapper.current.offsetWidth);
     }, [])
 
@@ -66,9 +70,10 @@ const Stories = () => {
     }, [stories])
 
     const onHandleDelete = (storiesId, contentArr) => {
-        deleteContent({userId, contentType: 'stories', id: storiesId});
-        deleteContentFiles({userId, contentType: 'stories', contentArr: contentArr});
-
+        if (isUserOwnPage) {
+            deleteContent({userId, contentType: 'stories', id: storiesId});
+            deleteContentFiles({userId, contentType: 'stories', contentArr: contentArr});
+        }
         // setIsAnimationComplete(true);
     }
 
@@ -110,12 +115,16 @@ const Stories = () => {
                 transition={{ease: "easeInOut", duration: .6}}
                 onClick={(e) => onHandleShowModal(e, item.id)}
                 >
-                    <div
-                    className="stories__item-delete"
-                    onClick={() => onHandleDelete(item.id, item.contentImages)}
-                    >
-                        <i className="fa-solid fa-xmark"></i>
-                    </div>
+                    {
+                        isUserOwnPage ?
+                        <div
+                        className="stories__item-delete"
+                        onClick={() => onHandleDelete(item.id, item.contentImages)}
+                        >
+                            <i className="fa-solid fa-xmark"></i>
+                        </div> :
+                        null
+                    }
                     <img className="stories__preview" src={item.contentImages[0].imageUrl} alt=""/>
                     <div className="stories__title">{item.article}</div>
                     <time className="stories__date" dateTime="2020-09-21 19:21">{item.time}</time>
@@ -131,6 +140,8 @@ const Stories = () => {
     return (
         <>
             <div className="stories">
+
+                <h2 className='page__title'>Истории</h2>
 
                 <AnimatePresence>
                     {/* Не работает, починить! */}
@@ -182,7 +193,7 @@ const Stories = () => {
              : null}
 
             {
-                showModal ? createPortal(<StoryModal storyId={modalStoryId} closeModal={() => setShowModal(false)} />, document.body) : null
+                showModal ? createPortal(<StoryModal pageId={pageId} storyId={modalStoryId} closeModal={() => setShowModal(false)} />, document.body) : null
             }
         </>
 

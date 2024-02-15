@@ -109,7 +109,7 @@ const AddContent = (props) => {
     const [imageArr, setImageArr] = useState([]);
     const [isPreLoading, setIsPreLoading] = useState(false);
 
-    const {userId} = useSelector(state => state.userInfo);
+    const {userId, currentPageId} = useSelector(state => state.userInfo);
 
     const [createContent, {isLoading, isError}] = useCreateContentMutation();
 
@@ -285,6 +285,10 @@ const AddContent = (props) => {
     const loadedImagesPreview = useMemo(() => {
         return renderImagePreview(imageArr);
     }, [imageArr]);
+
+    if (userId !== currentPageId) {
+        return;
+    }
 
     return (
         <motion.div

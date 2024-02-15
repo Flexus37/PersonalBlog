@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentPageId } from '../../services/api/userInfoSlice';
 import { useGetAllContentQuery, useRemoveFromFriendsMutation, useGetUsersQuery, useSendFriendRequestMutation, useGetFriendRequestsCountQuery } from '../../services/api/apiSlice';
 import debounce from 'lodash.debounce';
 import { Icon } from '@iconify/react';
@@ -17,6 +18,7 @@ const Friends = () => {
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchInput);
 
     const {userId} = useSelector(state => state.userInfo);
+    const dispatch = useDispatch();
 
     const {
         data: friends = [],
@@ -102,7 +104,7 @@ const Friends = () => {
                     transition={{ease: "easeInOut", duration: .6}}
                 >
                     <img src={item.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
-                    <h2 className='friends__name'>{fixUserName(item.name, item.surname)}</h2>
+                    <Link onClick={() => dispatch(setCurrentPageId(item.id))} to={`/blog/${item.id}`} className='friends__name'>{fixUserName(item.name, item.surname)}</Link>
                     <ul className="social">
                         {renderLinks(item.links)}
                     </ul>

@@ -1,6 +1,13 @@
+import {useSelector} from 'react-redux'
 import './addStory.scss'
 
 const AddStory = ({renderAddContent}) => {
+
+    const {userId, currentPageId} = useSelector(state => state.userInfo);
+
+    if (userId !== currentPageId) {
+        return;
+    }
 
     return (
         <div className="add-story" data-modal="story-modal" onClick={renderAddContent}>

@@ -9,7 +9,7 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import './modal.scss'
 
 
-const StoryModal = ({closeModal, storyId}) => {
+const StoryModal = ({pageId, closeModal, storyId}) => {
 
     const [storiesWidth, setStoriesWidth] = useState(0);
     const [storiesOffset, setStoriesOffset] = useState(0);
@@ -25,7 +25,7 @@ const StoryModal = ({closeModal, storyId}) => {
         data: story,
         isLoading,
         isError
-    } = useGetContentQuery({userId, contentType: 'stories', contentId: storyId})
+    } = useGetContentQuery({userId: pageId, contentType: 'stories', contentId: storyId})
 
     useEffect(() => {
         setStoriesWidth(storiesWrapper.current.offsetWidth);

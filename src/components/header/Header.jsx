@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUserAuthentication, setSidebarOpening } from '../../services/api/userInfoSlice';
+import { setUserAuthentication, setSidebarOpening, setCurrentPageId } from '../../services/api/userInfoSlice';
 import { auth } from '../../services/firebase/FirestoreConfig';
 import { signOut } from 'firebase/auth';
 
@@ -45,16 +45,25 @@ const Header = () => {
                                 className={({isActive}) => isActive ?
                                 'nav__link active' : 'nav__link'
                                 }
+                                onClick={() => dispatch(setCurrentPageId(userId))}
                                 to='/friends'
                                 href='#'
                             >Друзья</NavLink>
 
                             <ul className="subnav">
                                 <li>
-                                    <NavLink className='subnav__link' to='/friends'>Все друзья</NavLink>
+                                    <NavLink
+                                        onClick={() => dispatch(setCurrentPageId(userId))}
+                                        className='subnav__link'
+                                        to='/friends'
+                                    >Все друзья</NavLink>
                                 </li>
                                 <li>
-                                    <NavLink className='subnav__link' to='/friends/requests'>Заявки в друзья</NavLink>
+                                    <NavLink
+                                    onClick={() => dispatch(setCurrentPageId(userId))}
+                                    className='subnav__link'
+                                    to='/friends/requests'
+                                    >Заявки в друзья</NavLink>
                                 </li>
                             </ul>
                         </li>
@@ -74,6 +83,7 @@ const Header = () => {
                                 className={({isActive}) => isActive ?
                                 'nav__link active' : 'nav__link'
                                 }
+                                onClick={() => dispatch(setCurrentPageId(userId))}
                                 to='/profile'
                                 href='#'
                             >Профиль</NavLink>

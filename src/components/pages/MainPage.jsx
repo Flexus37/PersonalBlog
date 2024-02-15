@@ -26,10 +26,10 @@ const MainPage = () => {
                 />
                 <title>Personal blog</title>
             </Helmet>
-            <Stories userId={id} />
+            <Stories pageId={id} />
+            <h2 className='page__title'>Посты</h2>
             <AddContent key='addPost' type='posts'/>
-            <Posts userId={id} />
-            {/* <Pagination/> */}
+            <Posts pageId={id} />
         </>
     )
 }

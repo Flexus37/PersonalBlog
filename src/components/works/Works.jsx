@@ -17,9 +17,10 @@ const Works = () => {
     const [worksLimit, setWorksLimit] = useState(10);
     const [docCount, setDocCount] = useState(null);
     const [worksEnded, setWorksEnded] = useState(false);
+    const [isUserOwnPage, setIsUserOwnPage] = useState(false);
     const [showEmptyMessage, setShowEmptyMessage] = useState(true);
 
-    const {currentPageId} = useSelector(state => state.userInfo);
+    const {userId, currentPageId} = useSelector(state => state.userInfo);
 
     const {
         data: works = [],
@@ -32,6 +33,12 @@ const Works = () => {
             contentLimit: worksLimit
         } : skipToken
     );
+
+    useEffect(() => {
+        if (userId === currentPageId) {
+            setIsUserOwnPage(true);
+        }
+    }, [])
 
     // useEffect(() => {
     //     console.log(works);
@@ -77,12 +84,15 @@ const Works = () => {
     ] = useDeleteContentFilesMutation();
 
     const onHandleDelete = (workId, imageIdArr) => {
-        // setDeletingPostId(postId);
-        deleteContent({userId: currentPageId, contentType: 'works', id: workId});
-        deleteContentFiles({userId: currentPageId, contentType: 'works', contentIdArr: imageIdArr});
 
-        // setDeletingPostId('');
-        setIsAnimationComplete(true);
+        if (isUserOwnPage) {
+            // setDeletingPostId(postId);
+            deleteContent({userId, contentType: 'works', id: workId});
+            deleteContentFiles({userId, contentType: 'works', contentIdArr: imageIdArr});
+
+            // setDeletingPostId('');
+            setIsAnimationComplete(true);
+        }
     }
 
     const onHandleLoadMore = () => {
@@ -122,7 +132,11 @@ const Works = () => {
                     onAnimationStart={() => setIsAnimationComplete(false)}
                     onAnimationComplete={() => setIsAnimationComplete(true)}
                 >
-                    <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i>
+                    {
+                        isUserOwnPage ?
+                        <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i>:
+                        null
+                    }
                     {
                         item.contentImages[0] ?
                         (

@@ -62,7 +62,9 @@ const FriendRequestList = () => {
     }
 
     const renderFriendRequests = (data) => {
-        if (!data || data.length === 0) {
+        if (isFriendRequestsLoading) {
+            return <Spinner lottiestyle={{'height': '300px'}} />;
+        } else if (!data || data.length === 0) {
             return null;
         }
 
