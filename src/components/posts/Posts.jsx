@@ -158,7 +158,11 @@ const Posts = ({pageId}) => {
                         {
                             // isPostDeleting ? <Spinner/> :
                             <>
-                                <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i>
+                                {
+                                    isUserOwnPage ?
+                                    <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i> :
+                                    null
+                                }
                                 {
                                     isPostImages ?
                                     renderPostImages(item.contentImages)

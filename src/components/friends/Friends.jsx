@@ -138,7 +138,7 @@ const Friends = () => {
                     transition={{ease: "easeInOut", duration: .6}}
                 >
                     <img src={user.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
-                    <h2 className='friends__name'>{fixUserName(user.name, user.surname)}</h2>
+                    <Link onClick={() => dispatch(setCurrentPageId(user.id))} to={`/blog/${user.id}`} className='friends__name'>{fixUserName(user.name, user.surname)}</Link>
                     <ul className="social">
                         {renderLinks(user.links)}
                     </ul>
