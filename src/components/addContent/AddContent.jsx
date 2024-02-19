@@ -194,7 +194,7 @@ const AddContent = (props) => {
 
     const handleImageLoaded = async (e) => {
 
-        let newImageArr = imageArr.map(obj => ({...obj}));
+        let newImageArr = imageArr.slice();
 
         const files = await Promise.all(
             Object.values(e.target.files).map(async (file, i) => {
@@ -215,8 +215,8 @@ const AddContent = (props) => {
                     };
                 }
                 return {
-                    imageId: uuidv4(),
-                    imageFile: item
+                    imageId: item.imageId,
+                    imageFile: item.imageFile
                 };
             })
         } else {
@@ -231,7 +231,7 @@ const AddContent = (props) => {
         }
 
 
-
+        console.log(newImageArr);
         setImageArr(newImageArr);
     }
 
