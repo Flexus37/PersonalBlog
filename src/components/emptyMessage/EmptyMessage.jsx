@@ -15,6 +15,7 @@ const EmptyMessage = (props) => {
             transition={{ease: 'easeInOut', duration: .5}}
         >
             <Lottie
+            style={props.lottieStyle}
             animationData={props.type === 'works' ? worksImg : postsImg}
             loop={true} />
             <div className='empty'>

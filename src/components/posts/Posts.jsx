@@ -119,7 +119,7 @@ const Posts = ({pageId}) => {
 
     const renderPosts = (arr) => {
         if (isDataLoading) {
-            return <Spinner/>
+            return <Spinner lottieStyle={{'height': '500px'}} />
         }
 
         if (isDataError) {
@@ -127,7 +127,7 @@ const Posts = ({pageId}) => {
         }
 
         if (arr.length === 0 && isAnimationComplete) {
-            return <EmptyMessage/>;
+            return <EmptyMessage lottieStyle={{'height': '550px'}} />;
         }
 
         const items = arr.map(item => {
