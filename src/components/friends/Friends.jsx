@@ -5,7 +5,7 @@ import { setCurrentPageId } from '../../services/api/userInfoSlice';
 import { useGetAllContentQuery, useRemoveFromFriendsMutation, useGetUsersQuery, useSendFriendRequestMutation, useGetFriendRequestsCountQuery } from '../../services/api/apiSlice';
 import debounce from 'lodash.debounce';
 import { Icon } from '@iconify/react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import fixUserName from '../../services/fixUserName';
 
 import Spinner from '../spinner/Spinner';
@@ -157,17 +157,21 @@ const Friends = () => {
     return (
         <>
             <div className="friends__header">
-                <h1 className="page__title">Все друзья</h1>
-                <Link className="friends__requests" to='/friends/requests'>
+                <NavLink to='/friends' end className={({isActive}) =>
+                        isActive ? 'friends__title active' : 'friends__title'
+                    }>Все друзья</NavLink>
+                <NavLink to='/friends/requests' className={({isActive}) =>
+                        isActive ? 'friends__requests active' : 'friends__requests'
+                    }>
                     <h2>Заявки</h2>
                     <i className="fa-solid fa-bell"></i>
                     {
                         friendRequestsCount !== 0 &&
                         friendRequestsCount !== null ?
-                        <p>{friendRequestsCount}</p> :
+                        <p className="friends__requests-count">{friendRequestsCount}</p> :
                         null
                     }
-                </Link>
+                </NavLink>
             </div>
 
             <div className="friends__search">

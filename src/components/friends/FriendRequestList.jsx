@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDeleteContentMutation, useGetFriendRequestsQuery, useAcceptFriendRequestMutation, useRejectFriendRequestMutation } from "../../services/api/apiSlice";
+import { useDeleteContentMutation, useGetFriendRequestsQuery, useAcceptFriendRequestMutation, useRejectFriendRequestMutation, useGetFriendRequestsCountQuery } from "../../services/api/apiSlice";
 import { useSelector } from 'react-redux';
 import { Icon } from '@iconify/react';
 import fixUserName from "../../services/fixUserName";
+import { Link, NavLink } from 'react-router-dom';
+
 
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -13,6 +15,10 @@ import './friends.scss';
 const FriendRequestList = () => {
 
     const {userId} = useSelector(state => state.userInfo);
+
+    const {
+        data: friendRequestsCount = 0
+    } = useGetFriendRequestsCountQuery(userId);
 
     const {
         data: friendRequests = [],
@@ -100,7 +106,23 @@ const FriendRequestList = () => {
 
     return (
         <>
-            <h1 className="page__title">Заявки в друзья</h1>
+            <div className="friends__header">
+                <NavLink to='/friends' end className={({isActive}) =>
+                        isActive ? 'friends__title active' : 'friends__title'
+                    }>Все друзья</NavLink>
+                <NavLink to='/friends/requests' className={({isActive}) =>
+                        isActive ? 'friends__requests active' : 'friends__requests'
+                    }>
+                    <h2>Заявки</h2>
+                    <i className="fa-solid fa-bell"></i>
+                    {
+                        friendRequestsCount !== 0 &&
+                        friendRequestsCount !== null ?
+                        <p className="friends__requests-count">{friendRequestsCount}</p> :
+                        null
+                    }
+                </NavLink>
+            </div>
 
             <AnimatePresence>
                 {renderFriendRequests(friendRequests)}
