@@ -65,7 +65,7 @@ function App() {
         ) : (
           <Suspense fallback={<ErrorMessage />}>
             <Routes>
-              <Route path="/" element={<Navigate replace to='/sign-in' />} />
+              <Route path="/*" element={<Navigate replace to='/sign-in' />} />
               <Route path="/sign-in" element={<SignIn />} />
               <Route path='/registration' element={<SignUp />} />
             </Routes>
