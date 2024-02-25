@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentPageId } from '../../services/api/userInfoSlice';
-import { useGetAllContentQuery, useRemoveFromFriendsMutation, useGetUsersQuery, useSendFriendRequestMutation, useGetFriendRequestsCountQuery } from '../../services/api/apiSlice';
+import { useGetAllContentQuery, useRemoveFromFriendsMutation, useGetUsersQuery, useSendFriendRequestMutation, useGetFriendRequestsCountQuery, useGetRequestsToUsersQuery } from '../../services/api/apiSlice';
 import debounce from 'lodash.debounce';
 import { Icon } from '@iconify/react';
 import { Link, NavLink } from 'react-router-dom';
@@ -31,6 +31,10 @@ const Friends = () => {
         isLoading: isUsersLoading,
         isError: isUsersError
     } = useGetUsersQuery(debouncedSearchTerm);
+
+    const {
+        data: requestsToUsers = []
+    } = useGetRequestsToUsersQuery(userId);
 
     const {
         data: friendRequestsCount = 0
@@ -67,6 +71,10 @@ const Friends = () => {
           debouncedOnChange(searchInput.trim().toLowerCase());
         }
     }, [searchInput, debouncedOnChange]);
+
+    const onHandleSendFriendRequest = (receiverId) => {
+
+    }
 
     const renderLinks = (links) => {
         if (!links || links.length === 0) {
@@ -128,6 +136,8 @@ const Friends = () => {
         const friendsIds = friends.map(friend => friend.id);
 
         const items = users.filter(user => user.id !== userId && !friendsIds.includes(user.id)).map(user => {
+            // console.log(userSendedRequests, user.id);
+
             return (
                 <motion.div
                     key={user.id}
@@ -142,7 +152,11 @@ const Friends = () => {
                     <ul className="social">
                         {renderLinks(user.links)}
                     </ul>
-                    <i onClick={() => sendFriendRequest({senderId: userId, receiverId: user.id})} className="fa-solid fa-user-plus"></i>
+                    {
+                        requestsToUsers.some(request => request.receiverId === user.id)
+                        ? <Icon className='friends__requests-sended' icon="bi:send-check"/>
+                        : <i onClick={() => sendFriendRequest({senderId: userId, receiverId: user.id})} className="fa-solid fa-user-plus"></i>
+                    }
                 </motion.div>
             )
         })

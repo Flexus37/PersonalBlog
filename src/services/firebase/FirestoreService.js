@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase/auth';
-import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit, where, Timestamp } from 'firebase/firestore';
+import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit, where, Timestamp, onSnapshot } from 'firebase/firestore';
 import { db } from './FirestoreConfig';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { storage } from './FirestoreConfig';
@@ -179,7 +179,7 @@ export async function sendFriendRequest({senderId, receiverId}) {
         const docRef = await addDoc(friendRequestCol, newRequest);
         return docRef.id;
     } catch (error) {
-        console.log('Ошибка при отправке заявки в друзья: ', error);
+        console.error('Ошибка при отправке заявки в друзья: ', error);
         return null;
     }
 }
@@ -201,7 +201,31 @@ export async function getFriendRequests(userId) {
         return await Promise.all(userInfoPromises);
 
     } catch (error) {
-        console.log('Ошибка при получении заявок в друзья: ', error);
+        console.error('Ошибка при получении заявок в друзья: ', error);
+        return [];
+    }
+}
+
+export async function getRequestsToUsers(senderId) {
+    const friendRequestCol = collection(db, 'FriendRequests');
+    const q = query(friendRequestCol, where('senderId', '==', senderId), where('status', '==', 'pending'));
+
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+
+            const milliseconds = data.timestamp.seconds * 1000;
+            const dateObject = new Date(milliseconds);
+            const timestamp = dateObject.toLocaleString();
+
+            return {
+                ...data,
+                timestamp
+            }
+        });
+    } catch (error) {
+        console.error('Ошибка при получении заявок в друзья: ', error);
         return [];
     }
 }
@@ -214,7 +238,7 @@ export async function getFriendRequestsCount(userId) {
         const snapshot = await getCountFromServer(q);
         return snapshot.data().count;
     } catch (error) {
-        console.log('Ошабка при получении кол-во заявок в друзья', error);
+        console.error('Ошибка при получении кол-во заявок в друзья', error);
         return null;
     }
 }
@@ -231,7 +255,7 @@ export async function acceptFriendRequest({userId, friendId, friendInfo, request
         await setDoc(doc(db, 'users', friendId, 'friends', userId), userInfo)
         await deleteDoc(doc(db, 'FriendRequests', requestId));
     } catch (error) {
-        console.log('Ошибка при одобрении заявки', error)
+        console.error('Ошибка при одобрении заявки', error)
     } finally {
         return userId;
     }
@@ -242,7 +266,7 @@ export async function rejectFriendRequest(requestId) {
     try {
         await deleteDoc(doc(db, 'FriendRequests', requestId));
     } catch (error) {
-        console.log('Ошибка при отклонении запроса в друзья', error);
+        console.error('Ошибка при отклонении запроса в друзья', error);
     } finally {
         return requestId;
     }
@@ -253,7 +277,7 @@ export async function removeFromFriends({userId, friendId}) {
         await deleteContent({userId, contentType: 'friends', id: friendId});
         await deleteContent({userId: friendId, contentType: 'friends', id: userId})
     } catch (error) {
-        console.log('Ошибка при удалении друзей', error);
+        console.error('Ошибка при удалении друзей', error);
     } finally {
         return userId;
     }
