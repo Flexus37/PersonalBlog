@@ -153,7 +153,9 @@ const Friends = () => {
                         {renderLinks(user.links)}
                     </ul>
                     {
-                        requestsToUsers.some(request => request.receiverId === user.id)
+                        isFriendRequestSending
+                        ? <Spinner lottiestyle={{'marginLeft': 'auto', 'maxHeight': '6rem', 'maxWidth': '6rem'}} />
+                        : requestsToUsers.some(request => request.receiverId === user.id)
                         ? <Icon className='friends__requests-sended' icon="bi:send-check"/>
                         : <i onClick={() => sendFriendRequest({senderId: userId, receiverId: user.id})} className="fa-solid fa-user-plus"></i>
                     }
