@@ -21,6 +21,9 @@ const userInfoSlice = createSlice({
         setUserId: (state, action) => {
             state.userId = action.payload;
         },
+        setLoadingStatus: (state, action) => {
+            state.loadingStatus = action.payload
+        },
         setCurrentPageId: (state, action) => {
             state.currentPageId = action.payload
         },
@@ -44,6 +47,7 @@ export default reducer;
 export const {
     setUserAuthentication,
     setUserId,
+    setLoadingStatus,
     setCurrentPageId,
     setSidebarOpening,
     setStoriesEmpty,

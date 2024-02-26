@@ -40,9 +40,10 @@
         border-radius: 5px;
 
         margin: 0 auto;
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
+        position: relative;
+        // position: absolute;
+        // top: 50%;
+        // transform: translateY(-50%);
     }
 
     &__content {

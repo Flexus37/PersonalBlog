@@ -4,15 +4,17 @@ import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 import {signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
 import { auth } from '../../../services/firebase/FirestoreConfig';
-import { useDispatch} from 'react-redux'
-import { setUserAuthentication } from '../../../services/api/userInfoSlice';
+import { useDispatch, useSelector} from 'react-redux'
+import { setUserAuthentication, setLoadingStatus } from '../../../services/api/userInfoSlice';
 
 import AuthHeader from '../AuthHeader';
+import Spinner from '../../spinner/Spinner';
 
 import '../auth.scss';
 import GoogleIcon from '../../../resources/img/icons/Google.svg'
 
 const SignIn = () => {
+    const {loadingStatus} = useSelector(state => state.userInfo);
     const dispatch = useDispatch();
 
     const GoggleProvider = new GoogleAuthProvider();
@@ -22,6 +24,14 @@ const SignIn = () => {
             <AuthHeader />
             <div className="auth__wrapper">
                 <div className="auth__inner">
+                    {
+                        loadingStatus === 'loading' ?
+                        <div className="loading__wrapper">
+                            <Spinner lottiestyle={{'height': '100%'}} />
+                        </div>
+                        : null
+                    }
+
                     <div className="auth__content">
                         <h1 className="auth__title">Вход</h1>
                         <Formik
@@ -38,6 +48,7 @@ const SignIn = () => {
                             })}
                             onSubmit={(values, {setSubmitting}) => {
                                 setSubmitting(true);
+                                dispatch(setLoadingStatus('loading'));
 
                                 try {
                                     signInWithEmailAndPassword(auth, values.email, values.password)
@@ -45,9 +56,11 @@ const SignIn = () => {
                                             const user = userCredential.user;
                                             console.log(user);
                                             dispatch(setUserAuthentication(true));
+                                            dispatch(setLoadingStatus('idle'));
                                         })
                                         .catch(error => {
                                             console.log('Error from sign in:', error.code, error.message);
+                                            dispatch(setLoadingStatus('idle'));
                                         })
                                 }
                                 catch(error) {
@@ -55,6 +68,7 @@ const SignIn = () => {
                                 }
                                 finally {
                                     setSubmitting(false);
+
                                 }
                             }}
                         >
@@ -76,6 +90,7 @@ const SignIn = () => {
                                         type="password"
                                         className="form__control"
                                         placeholder='Пароль'
+
                                     />
                                     <span className="form__line"></span>
                                 </div>

@@ -26,6 +26,18 @@ body {
 
 }
 
+.loading__wrapper {
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba($color: $dark-grey, $alpha: .7);
+
+    position: absolute;
+    z-index: 20;
+    top: 0;
+    left: 0;
+}
+
 *,
 *::after,
 *::before {
