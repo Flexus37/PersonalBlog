@@ -38,7 +38,7 @@ const Header = () => {
                                 'nav__link active' : 'nav__link'
                                 }
                                 to={`/blog/${userId}`}
-                            >Главная</NavLink>
+                            >Мой блог</NavLink>
                         </li>
                         <li className="nav__item">
                             <NavLink
