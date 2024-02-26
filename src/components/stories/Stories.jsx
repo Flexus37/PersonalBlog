@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation } from '../../services/api/apiSlice';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
+import { setStoriesEmpty } from '../../services/api/userInfoSlice';
 
 import AddStory from './add-story/AddStory';
 import AddContent from '../addContent/AddContent';
@@ -25,7 +26,8 @@ const Stories = ({pageId}) => {
     const storiesWrapper = useRef(null);
     const storiesInner = useRef(null);
 
-    const {userId} = useSelector(state => state.userInfo);
+    const {userId, isStoriesEmpty} = useSelector(state => state.userInfo);
+    const dispatch = useDispatch();
 
     const {
         data: stories = [],
@@ -57,6 +59,12 @@ const Stories = ({pageId}) => {
     }, [])
 
     useEffect(() => {
+
+        if (stories.length === 0) {
+            dispatch(setStoriesEmpty(true));
+        } else if (isStoriesEmpty) {
+            dispatch(setStoriesEmpty(false));
+        }
 
         const slides = Math.ceil((stories.length + 1) / 4);
 

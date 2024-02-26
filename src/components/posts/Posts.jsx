@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useGetAllContentQuery, useDeleteContentMutation, useDeleteContentFilesMutation} from '../../services/api/apiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getDocCount } from '../../services/firebase/FirestoreService';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
+import { setPostsEmpty } from '../../services/api/userInfoSlice';
 
 import './posts.scss';
 
@@ -20,7 +21,8 @@ const Posts = ({pageId}) => {
     const [isUserOwnPage, setIsUserOwnPage] = useState(false);
     const [showEmptyMessage, setShowEmptyMessage] = useState(true);
 
-    const {userId} = useSelector(state => state.userInfo);
+    const {userId, isPostsEmpty} = useSelector(state => state.userInfo);
+    const dispatch = useDispatch();
 
     const {
         data: posts = [],
@@ -33,6 +35,14 @@ const Posts = ({pageId}) => {
             setIsUserOwnPage(true);
         }
     }, [])
+
+    useEffect(() => {
+        if (posts.length === 0) {
+            dispatch(setPostsEmpty(true));
+        } else if (isPostsEmpty) {
+            dispatch(setPostsEmpty(false));
+        }
+    }, [posts])
 
     useEffect(() => {
         async function fetchData() {

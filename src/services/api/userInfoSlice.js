@@ -6,7 +6,9 @@ const initialState = userInfoAdapter.getInitialState({
     currentPageId: null,
     isAuthenticated: false,
     loadingStatus: 'idle',
-    isSidebarOpened: false
+    isSidebarOpened: false,
+    isStoriesEmpty: false,
+    isPostsEmpty: false
 });
 
 const userInfoSlice = createSlice({
@@ -24,6 +26,12 @@ const userInfoSlice = createSlice({
         },
         setSidebarOpening: (state, action) => {
             state.isSidebarOpened = action.payload
+        },
+        setStoriesEmpty: (state, action) => {
+            state.isStoriesEmpty = action.payload
+        },
+        setPostsEmpty: (state, action) => {
+            state.isPostsEmpty = action.payload
         }
     }
 })
@@ -37,5 +45,7 @@ export const {
     setUserAuthentication,
     setUserId,
     setCurrentPageId,
-    setSidebarOpening
+    setSidebarOpening,
+    setStoriesEmpty,
+    setPostsEmpty
 } = actions;
