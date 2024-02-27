@@ -3,18 +3,19 @@ import * as Yup from 'yup';
 import FormInput from '../../../services/formikInput/FormInput';
 import { Link, useNavigate } from 'react-router-dom';
 import {createUserWithEmailAndPassword} from 'firebase/auth'
-import { useDispatch} from 'react-redux'
-import { setUserAuthentication, setUserId } from '../../../services/api/userInfoSlice';
+import { useDispatch, useSelector } from 'react-redux'
+import { setUserAuthentication, setUserId, setLoadingStatus } from '../../../services/api/userInfoSlice';
 import { auth } from '../../../services/firebase/FirestoreConfig';
 import { useCreateUserInfoMutation } from '../../../services/api/apiSlice';
-import { getDownloadURL, ref } from 'firebase/storage';
-import { storage } from '../../../services/firebase/FirestoreConfig';
 
 import AuthHeader from '../AuthHeader';
+import OverlaySpinner from '../../spinner/OverlaySpinner';
 
 import '../auth.scss';
 
 const SignUp = () => {
+    const {loadingStatus} = useSelector(state => state.userInfo)
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -27,6 +28,11 @@ const SignUp = () => {
             <AuthHeader />
             <div className="auth__wrapper">
                 <div className="auth__inner">
+                    {
+                        loadingStatus === 'loading'
+                        ? <OverlaySpinner />
+                        : null
+                    }
                     <div className="auth__content">
                         <Link className='auth__back' to='/'>Назад</Link>
                         <h1 className="auth__title auth__title--registration">Регистрация</h1>
@@ -56,15 +62,13 @@ const SignUp = () => {
                                     .required('Необходимо подтвердить пароль')
                             })}
                             onSubmit={(values, {setSubmitting}) => {
-                                console.log('Going Reg...')
                                 setSubmitting(true);
+                                dispatch(setLoadingStatus('loading'));
+
                                 try {
                                     createUserWithEmailAndPassword(auth, values.email, values.password)
                                         .then((userCredential) => {
                                             const user = userCredential.user;
-
-                                            // const avatarImageUrl = getDownloadURL(ref(storage, 'users/default-avatar.jpg'))
-                                            // const profilePreviewImageUrl = getDownloadURL(ref(storage, 'users/default-preview-profile-image.jpg'))
 
                                             createUserInfo({
                                                 userId: user.uid,
@@ -87,6 +91,7 @@ const SignUp = () => {
                                             })
                                             dispatch(setUserId(user.uid));
                                             dispatch(setUserAuthentication(true));
+                                            dispatch(setLoadingStatus('idle'));
                                             navigate('/');
                                         })
                                         .catch((error) => {

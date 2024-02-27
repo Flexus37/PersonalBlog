@@ -8,6 +8,7 @@ import { Icon } from '@iconify/react';
 import { Link, NavLink } from 'react-router-dom';
 import fixUserName from '../../services/fixUserName';
 
+import OverlaySpinner from '../spinner/OverlaySpinner';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
@@ -16,6 +17,7 @@ import './friends.scss';
 const Friends = () => {
     const [searchInput, setSearchInput] = useState('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchInput);
+    const [deletionFriendIds, setDeletionFriendIds] = useState([]);
 
     const {userId} = useSelector(state => state.userInfo);
     const dispatch = useDispatch();
@@ -72,9 +74,17 @@ const Friends = () => {
         }
     }, [searchInput, debouncedOnChange]);
 
-    const onHandleSendFriendRequest = (receiverId) => {
-
+    const onHandleDeleteFriend = async (friendId) => {
+        setDeletionFriendIds(prevArr => prevArr.includes(friendId) ? prevArr : [...prevArr, friendId]);
+        await removeFromFriends({userId, friendId});
+        setDeletionFriendIds(prevArr => prevArr.filter(id => friendId !== id))
     }
+
+    console.log(deletionFriendIds);
+
+    // const onHandleSendFriendRequest = (receiverId) => {
+
+    // }
 
     const renderLinks = (links) => {
         if (!links || links.length === 0) {
@@ -111,12 +121,17 @@ const Friends = () => {
                     exit={{opacity: 0, scale: .6}}
                     transition={{ease: "easeInOut", duration: .6}}
                 >
+                    {
+                        isDeleting && deletionFriendIds.includes(item.id)
+                        ? <OverlaySpinner />
+                        : null
+                    }
                     <img src={item.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
                     <Link onClick={() => dispatch(setCurrentPageId(item.id))} to={`/blog/${item.id}`} className='friends__name'>{fixUserName(item.name, item.surname)}</Link>
                     <ul className="social">
                         {renderLinks(item.links)}
                     </ul>
-                    <i onClick={() => removeFromFriends({userId, friendId: item.id})} className="fa-solid fa-user-xmark"></i>
+                    <i onClick={() => onHandleDeleteFriend(item.id)} className="fa-solid fa-user-xmark"></i>
                 </motion.div>
             )
         });
@@ -154,7 +169,8 @@ const Friends = () => {
                     </ul>
                     {
                         isFriendRequestSending
-                        ? <Spinner lottiestyle={{'marginLeft': 'auto', 'maxHeight': '6rem', 'maxWidth': '6rem'}} />
+                        // ? <Spinner lottiestyle={{'marginLeft': 'auto', 'maxHeight': '6rem', 'maxWidth': '3rem'}} />
+                        ? <OverlaySpinner />
                         : requestsToUsers.some(request => request.receiverId === user.id)
                         ? <Icon className='friends__requests-sended' icon="bi:send-check"/>
                         : <i onClick={() => sendFriendRequest({senderId: userId, receiverId: user.id})} className="fa-solid fa-user-plus"></i>

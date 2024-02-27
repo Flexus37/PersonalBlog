@@ -8,7 +8,7 @@ import { useDispatch, useSelector} from 'react-redux'
 import { setUserAuthentication, setLoadingStatus } from '../../../services/api/userInfoSlice';
 
 import AuthHeader from '../AuthHeader';
-import Spinner from '../../spinner/Spinner';
+import OverlaySpinner from '../../spinner/OverlaySpinner';
 
 import '../auth.scss';
 import GoogleIcon from '../../../resources/img/icons/Google.svg'
@@ -26,9 +26,7 @@ const SignIn = () => {
                 <div className="auth__inner">
                     {
                         loadingStatus === 'loading' ?
-                        <div className="loading__wrapper">
-                            <Spinner lottiestyle={{'height': '100%'}} />
-                        </div>
+                        <OverlaySpinner />
                         : null
                     }
 
