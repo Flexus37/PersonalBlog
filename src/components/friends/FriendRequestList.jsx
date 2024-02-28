@@ -11,8 +11,12 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './friends.scss';
+import OverlaySpinner from "../spinner/OverlaySpinner";
 
 const FriendRequestList = () => {
+    const [actionRequestsIds, setActionRequestsIds] = useState([]);
+    // const [acceptetedRequestsIds, setAcceptetedRequestsIds] = useState([]);
+    // const [rejectedRequestsIds, setRejectedRequestsIds] = useState([]);
 
     const {userId} = useSelector(state => state.userInfo);
 
@@ -51,6 +55,19 @@ const FriendRequestList = () => {
         }
     ] = useDeleteContentMutation();
 
+    const onHandleFriendRequest = async (action, requestId, userId = null, friendId = null, friendInfo = null) => {
+        setActionRequestsIds(prevArr => prevArr.includes(requestId) ? prevArr : [...prevArr, requestId])
+        if (action === 'accept') {
+            await acceptFriendRequest({userId, friendId, friendInfo, requestId});
+        } else if (action === 'reject') {
+            await rejectFriendRequest(requestId);
+        } else {
+            setActionRequestsIds(prevArr => prevArr.filter(id => requestId !== id))
+            return;
+        }
+        setActionRequestsIds(prevArr => prevArr.filter(id => requestId !== id))
+    };
+
     const renderLinks = (links) => {
         if (!links || links.length === 0) {
             return null;
@@ -84,14 +101,19 @@ const FriendRequestList = () => {
                     exit={{opacity: 0, scale: .6}}
                     transition={{ease: "easeInOut", duration: .6}}
                 >
+                    {
+                        (isAcceptingFriendRequest || isRejectingFriendRequest) && actionRequestsIds.includes(item.requestId)
+                        ? <OverlaySpinner />
+                        : null
+                    }
                     <img src={item.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
                     <h2 className='friends__name'>{fixUserName(item.name, item.surname)}</h2>
                     <ul className="social">
                         {renderLinks(item.links)}
                     </ul>
                     <div className="friends__btns">
-                        <i onClick={() => acceptFriendRequest({userId, friendId: item.id, friendInfo: item, requestId: item.requestId})} className="fa-solid fa-check"></i>
-                        <i onClick={() => rejectFriendRequest(item.requestId)} className="fa-solid fa-xmark"></i>
+                        <i onClick={() => onHandleFriendRequest('accept', item.requestId, userId, item.id, item)} className="fa-solid fa-check"></i>
+                        <i onClick={() => onHandleFriendRequest('reject', item.requestId)} className="fa-solid fa-xmark"></i>
                     </div>
                 </motion.div>
             )

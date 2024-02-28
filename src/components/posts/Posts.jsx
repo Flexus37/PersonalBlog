@@ -10,16 +10,16 @@ import './posts.scss';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import EmptyMessage from '../emptyMessage/EmptyMessage';
+import OverlaySpinner from '../spinner/OverlaySpinner';
 
 const Posts = ({pageId}) => {
-
-    // const [deletingPostId, setDeletingPostId] = useState('');
     const [isAnimationComplete, setIsAnimationComplete] = useState(true);
     const [postsLimit, setPostsLimit] = useState(10);
     const [docCount, setDocCount] = useState(null);
     const [postEnded, setPostEnded] = useState(false);
     const [isUserOwnPage, setIsUserOwnPage] = useState(false);
-    const [showEmptyMessage, setShowEmptyMessage] = useState(true);
+    const [deletingPostIds, setDeletingPostIds] = useState([]);
+    // const [showEmptyMessage, setShowEmptyMessage] = useState(true);
 
     const {userId, isPostsEmpty} = useSelector(state => state.userInfo);
     const dispatch = useDispatch();
@@ -69,27 +69,28 @@ const Posts = ({pageId}) => {
     const [
         deleteContent,
         {
-            isLoading: isDeleting,
-            isError: isDeletingError,
-            isSuccess: isDeletingSuccess
+            isLoading: isPostDeleting,
+            isError: isPostDeletingError,
+            isSuccess: isPostDeletingSuccess
         }
     ] = useDeleteContentMutation();
 
     const [
         deleteContentFiles,
         {
-            isLoading: isDeletingImages,
-            isError: isDeletingImagesError
+            isLoading: isImagesDeleting,
+            isError: isImagesDeletingError
         }
     ] = useDeleteContentFilesMutation();
 
-    const onHandleDelete = (postId, imageIdArr) => {
+    const onHandleDelete = async (postId, imageIdArr) => {
         if (isUserOwnPage) {
-            // setDeletingPostId(postId);
-            deleteContent({userId, contentType: 'posts', id: postId});
-            deleteContentFiles({userId, contentType: 'posts', contentIdArr: imageIdArr});
+            setDeletingPostIds(prevArr => prevArr.includes(postId) ? prevArr : [...prevArr, postId])
 
-            // setDeletingPostId('');
+            await deleteContent({userId, contentType: 'posts', id: postId});
+            await deleteContentFiles({userId, contentType: 'posts', contentIdArr: imageIdArr});
+
+            setDeletingPostIds(prevArr => prevArr.filter(id => postId !== id))
             setIsAnimationComplete(true);
         }
     }
@@ -142,17 +143,10 @@ const Posts = ({pageId}) => {
 
         const items = arr.map(item => {
             const isPostImages = item.contentImages.length > 0;
-            // const imageIdArr = isPostImages ?
-            //     item.contentImages.map(item => {
-            //         return item.imageId;
-            //     })
-            //     : [];
 
             const tags = item.tags.map(tag => {
                 return tag.label;
             }).join(', ');
-
-            // const isPostDeleting = item.id === deletingPostId && (isDeleting || isDeletingImages)
 
             if (item.article === '') {
                 return (
@@ -166,30 +160,32 @@ const Posts = ({pageId}) => {
                         onAnimationStart={() => setIsAnimationComplete(false)}
                         onAnimationComplete={() => setIsAnimationComplete(true)} >
                         {
-                            // isPostDeleting ? <Spinner/> :
-                            <>
-                                {
-                                    isUserOwnPage ?
-                                    <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i> :
-                                    null
-                                }
-                                {
-                                    isPostImages ?
-                                    renderPostImages(item.contentImages)
-                                    : null
-                                }
-                                <div className="post__content">
-                                    <p className="post__description">{item.description}</p>
-                                </div>
-                                <div className="post__footer">
-                                    <ul className="post__data">
-                                        <li className="post__data-item">
-                                            <time dateTime="2020-06-21">{item.time}</time>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </>
+                            isPostDeleting && deletingPostIds.includes(item.id)
+                            ? <OverlaySpinner />
+                            : null
                         }
+                        <>
+                            {
+                                isUserOwnPage ?
+                                <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i> :
+                                null
+                            }
+                            {
+                                isPostImages ?
+                                renderPostImages(item.contentImages)
+                                : null
+                            }
+                            <div className="post__content">
+                                <p className="post__description">{item.description}</p>
+                            </div>
+                            <div className="post__footer">
+                                <ul className="post__data">
+                                    <li className="post__data-item">
+                                        <time dateTime="2020-06-21">{item.time}</time>
+                                    </li>
+                                </ul>
+                            </div>
+                        </>
                     </motion.div>
                 )
             } else {
@@ -202,42 +198,43 @@ const Posts = ({pageId}) => {
                         exit={{opacity: 0, scale: .6}}
                         transition={{ease: "easeInOut", duration: .3}}
                         onAnimationStart={() => setIsAnimationComplete(false)}
-                        onAnimationComplete={() => {
-                            setIsAnimationComplete(true);
-                            }}>
+                        onAnimationComplete={() => setIsAnimationComplete(true)}
+                    >
                         {
-                            // isPostDeleting ? <Spinner/> :
-                            <>
-                                {
-                                    isUserOwnPage ?
-                                    <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i> :
-                                    null
-                                }
-                                {
-                                    isPostImages ?
-                                    renderPostImages(item.contentImages) :
-                                    null
-                                }
-                                <div className="post__content">
-                                    <h2 className="post__title">
-                                        <a href="#">{item.article}</a>
-                                    </h2>
-                                    <p className="post__description">{item.description}</p>
-                                </div>
-                                <div className="post__footer">
-                                    <ul className="post__data">
-                                        <li className="post__data-item">
-                                            <time dateTime="2020-06-21">{item.time}</time>
-                                        </li>
-                                        <li className="post__data-item">
-                                            <a href="#">{tags}</a>
-                                        </li>
-                                    </ul>
-
-                                    <a className="post__read" href="#">читать</a>
-                                </div>
-                            </>
+                            isPostDeleting && deletingPostIds.includes(item.id)
+                            ? <OverlaySpinner />
+                            : null
                         }
+                        <>
+                            {
+                                isUserOwnPage ?
+                                <i onClick={() => onHandleDelete(item.id, item.contentImages)} className="fa-solid fa-xmark"></i> :
+                                null
+                            }
+                            {
+                                isPostImages ?
+                                renderPostImages(item.contentImages) :
+                                null
+                            }
+                            <div className="post__content">
+                                <h2 className="post__title">
+                                    <a href="#">{item.article}</a>
+                                </h2>
+                                <p className="post__description">{item.description}</p>
+                            </div>
+                            <div className="post__footer">
+                                <ul className="post__data">
+                                    <li className="post__data-item">
+                                        <time dateTime="2020-06-21">{item.time}</time>
+                                    </li>
+                                    <li className="post__data-item">
+                                        <a href="#">{tags}</a>
+                                    </li>
+                                </ul>
+
+                                <a className="post__read" href="#">читать</a>
+                            </div>
+                        </>
                     </motion.article>
                 )
             }

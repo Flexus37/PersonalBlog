@@ -10,6 +10,7 @@ import AddContent from '../addContent/AddContent';
 import StoryModal from '../modals/StoryModal';
 
 import './stories.scss';
+import OverlaySpinner from '../spinner/OverlaySpinner';
 
 const Stories = ({pageId}) => {
     const [isAddContent, setIsAddContent] = useState(false);
@@ -19,6 +20,7 @@ const Stories = ({pageId}) => {
     const [storiesIndex, setStoriesIndex] = useState(0);
     const [totalStoriesSlides, setTotalStoriesSlides] = useState(1);
     const [isUserOwnPage, setIsUserOwnPage] = useState(false);
+    const [deletingStoryIds, setDeletingStoryIds] = useState([]);
 
     const [showModal, setShowModal] = useState(false);
     const [modalStoryId, setModalStoryId] = useState(null);
@@ -31,23 +33,23 @@ const Stories = ({pageId}) => {
 
     const {
         data: stories = [],
-        isLoading: isContentLoading,
-        isError: isContentError
+        isLoading: isStoryLoading,
+        isError: isStoryError
     } = useGetAllContentQuery({userId: pageId, contentType: 'stories'});
 
     const [
         deleteContent,
         {
-            isLoading: isContentDeleting,
-            isError: isContentDeletingError
+            isLoading: isStoryDeleting,
+            isError: isStoryDeletingError
         }
      ] = useDeleteContentMutation();
 
      const [
         deleteContentFiles,
         {
-            isLoading: isContentFilesDeleting,
-            isError: isContentFilesDeletingError
+            isLoading: isStoryFilesDeleting,
+            isError: isStoryFilesDeletingError
         }
      ] = useDeleteContentFilesMutation();
 
@@ -77,12 +79,13 @@ const Stories = ({pageId}) => {
 
     }, [stories])
 
-    const onHandleDelete = (storiesId, contentArr) => {
+    const onHandleDelete = async (storyId, contentIdArr) => {
         if (isUserOwnPage) {
-            deleteContent({userId, contentType: 'stories', id: storiesId});
-            deleteContentFiles({userId, contentType: 'stories', contentArr: contentArr});
+            setDeletingStoryIds(prevArr => prevArr.includes(storyId) ? prevArr : [...prevArr, storyId])
+            await deleteContent({userId, contentType: 'stories', id: storyId});
+            await deleteContentFiles({userId, contentType: 'stories', contentIdArr});
+            setDeletingStoryIds(prevArr => prevArr.filter(id => storyId !== id))
         }
-        // setIsAnimationComplete(true);
     }
 
     const onHandleClickNext = () => {
@@ -123,6 +126,11 @@ const Stories = ({pageId}) => {
                 transition={{ease: "easeInOut", duration: .6}}
                 onClick={(e) => onHandleShowModal(e, item.id)}
                 >
+                    {
+                        isStoryDeleting && deletingStoryIds.includes(item.id)
+                        ? <OverlaySpinner />
+                        : null
+                    }
                     {
                         isUserOwnPage ?
                         <div

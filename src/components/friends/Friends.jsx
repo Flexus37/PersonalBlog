@@ -18,6 +18,7 @@ const Friends = () => {
     const [searchInput, setSearchInput] = useState('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchInput);
     const [deletionFriendIds, setDeletionFriendIds] = useState([]);
+    const [sendedRequestFriendsIds, setSendedRequestFriendsIds] = useState([]);
 
     const {userId} = useSelector(state => state.userInfo);
     const dispatch = useDispatch();
@@ -80,11 +81,11 @@ const Friends = () => {
         setDeletionFriendIds(prevArr => prevArr.filter(id => friendId !== id))
     }
 
-    console.log(deletionFriendIds);
-
-    // const onHandleSendFriendRequest = (receiverId) => {
-
-    // }
+    const onHandleSendFriendRequest = async (receiverId) => {
+        setSendedRequestFriendsIds(prevArr => prevArr.includes(receiverId) ? prevArr : [...prevArr, receiverId]);
+        await sendFriendRequest({senderId: userId, receiverId});
+        setSendedRequestFriendsIds(prevArr => prevArr.filter(id => receiverId !== id))
+    }
 
     const renderLinks = (links) => {
         if (!links || links.length === 0) {
@@ -150,9 +151,8 @@ const Friends = () => {
 
         const friendsIds = friends.map(friend => friend.id);
 
-        const items = users.filter(user => user.id !== userId && !friendsIds.includes(user.id)).map(user => {
-            // console.log(userSendedRequests, user.id);
-
+        const items = users.filter(user => user.id !== userId && !friendsIds.includes(user.id))
+        .map(user => {
             return (
                 <motion.div
                     key={user.id}
@@ -168,12 +168,11 @@ const Friends = () => {
                         {renderLinks(user.links)}
                     </ul>
                     {
-                        isFriendRequestSending
-                        // ? <Spinner lottiestyle={{'marginLeft': 'auto', 'maxHeight': '6rem', 'maxWidth': '3rem'}} />
+                        isFriendRequestSending && sendedRequestFriendsIds.includes(user.id)
                         ? <OverlaySpinner />
                         : requestsToUsers.some(request => request.receiverId === user.id)
                         ? <Icon className='friends__requests-sended' icon="bi:send-check"/>
-                        : <i onClick={() => sendFriendRequest({senderId: userId, receiverId: user.id})} className="fa-solid fa-user-plus"></i>
+                        : <i onClick={() => onHandleSendFriendRequest(user.id)} className="fa-solid fa-user-plus"></i>
                     }
                 </motion.div>
             )
