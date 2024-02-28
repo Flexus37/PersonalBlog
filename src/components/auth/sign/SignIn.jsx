@@ -27,13 +27,7 @@ const SignIn = () => {
         dispatch(setLoadingStatus('loading'));
         signInWithPopup(auth, googleProvider)
             .then(async (result) => {
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
-                // The signed-in user info.
                 const user = result.user;
-                // IdP data available using getAdditionalUserInfo(result)
-
                 const isUser = Object.keys(await getUserInfo(user.uid)).length > 1;
 
                 if (!isUser) {
@@ -63,15 +57,8 @@ const SignIn = () => {
                 dispatch(setLoadingStatus('idle'));
 
             }).catch((error) => {
-                // Handle Errors here.
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // The email of the user's account used.
-                const email = error.customData.email;
-                // The AuthCredential type that was used.
                 const credential = GoogleAuthProvider.credentialFromError(error);
-                // ...
-                console.error(errorCode, errorMessage, email, credential);
+                console.error(error.code, error.message, credential);
                 dispatch(setLoadingStatus('idle'));
             });
     }
