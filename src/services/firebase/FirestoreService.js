@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase/auth';
-import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit, where, Timestamp, onSnapshot } from 'firebase/firestore';
+import { collection, setDoc, query, getDocs, doc, addDoc, getDoc, deleteDoc, orderBy, getCountFromServer, limit, where, Timestamp, onSnapshot, or } from 'firebase/firestore';
 import { db } from './FirestoreConfig';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { storage } from './FirestoreConfig';
@@ -17,14 +17,22 @@ export async function getUsers(searchTerm) {
     }
 
     const words = searchTerm.split(' ');
+    let q;
+    let usersSnapshot;
 
+    if (words.length === 1) {
+        q = query(collection(db, 'users'), where('surname', '==', words[0]));
+        usersSnapshot = await getDocs(q);
 
-    if (words.length < 2) {
-        return;
+        if (usersSnapshot.docs.length === 0) {
+            q = query(collection(db, 'users'), where('name', '==', words[0]));
+            usersSnapshot = await getDocs(q);
+        }
+    } else {
+        q = query(collection(db, 'users'), where('name', '==', words[0]), where('surname', '==', words[1]))
+        usersSnapshot = await getDocs(q)
     }
 
-    const q = query(collection(db, 'users'), where('name', '==', words[0]), where('surname', '==', words[1]))
-    const usersSnapshot = await getDocs(q);
     const usersList = usersSnapshot.docs.map(doc => {
         const data = doc.data();
 
@@ -244,10 +252,6 @@ export async function getFriendRequestsCount(userId) {
 }
 
 export async function acceptFriendRequest({userId, friendId, friendInfo, requestId}) {
-    // const userCol = collection(db, 'users', userId, 'friends');
-    // const friendCol = collection(db, 'users', friendId, 'friends');
-    // const requestQuery = query(collection(db, 'FriendRequests'), where('senderId', '==', friendId));
-
     try {
         const userInfo = await getUserInfo(userId);
 

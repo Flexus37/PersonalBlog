@@ -64,7 +64,6 @@ const Friends = () => {
     const debouncedOnChange = useCallback(
         debounce((search) => {
           setDebouncedSearchTerm(search);
-          console.log(search);
         }, 500),
         []
     );
@@ -112,10 +111,18 @@ const Friends = () => {
             return null;
         }
 
-        const items = data.map(item => {
+        const items = data
+        .filter(friend => {
+            if (searchInput.trim() === '') {
+                return friend;
+            }
+            const fullName = `${friend.name} ${friend.surname}`;
+            return fullName.includes(searchInput.trim().toLowerCase());
+        })
+        .map(friend => {
             return (
                 <motion.div
-                    key={item.id}
+                    key={friend.id}
                     className="friends__item"
                     initial={{opacity: 0, scale: .7}}
                     animate={{opacity: 1, scale: 1}}
@@ -123,16 +130,16 @@ const Friends = () => {
                     transition={{ease: "easeInOut", duration: .6}}
                 >
                     {
-                        isDeleting && deletionFriendIds.includes(item.id)
+                        isDeleting && deletionFriendIds.includes(friend.id)
                         ? <OverlaySpinner />
                         : null
                     }
-                    <img src={item.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
-                    <Link onClick={() => dispatch(setCurrentPageId(item.id))} to={`/blog/${item.id}`} className='friends__name'>{fixUserName(item.name, item.surname)}</Link>
+                    <img src={friend.avatarImage.url} alt="Аватарка друга" className="friends__avatar" />
+                    <Link onClick={() => dispatch(setCurrentPageId(friend.id))} to={`/blog/${friend.id}`} className='friends__name'>{fixUserName(friend.name, friend.surname)}</Link>
                     <ul className="social">
-                        {renderLinks(item.links)}
+                        {renderLinks(friend.links)}
                     </ul>
-                    <i onClick={() => onHandleDeleteFriend(item.id)} className="fa-solid fa-user-xmark"></i>
+                    <i onClick={() => onHandleDeleteFriend(friend.id)} className="fa-solid fa-user-xmark"></i>
                 </motion.div>
             )
         });
