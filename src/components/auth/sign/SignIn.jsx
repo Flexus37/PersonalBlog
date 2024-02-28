@@ -2,22 +2,79 @@ import { Formik, Form } from 'formik';
 import FormInput from '../../../services/formikInput/FormInput';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
-import {signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
-import { auth } from '../../../services/firebase/FirestoreConfig';
+import {signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth, googleProvider } from '../../../services/firebase/FirestoreConfig';
 import { useDispatch, useSelector} from 'react-redux'
-import { setUserAuthentication, setLoadingStatus } from '../../../services/api/userInfoSlice';
+import { setUserAuthentication, setLoadingStatus, setUserId } from '../../../services/api/userInfoSlice';
+import { useCreateUserInfoMutation } from '../../../services/api/apiSlice';
 
 import AuthHeader from '../AuthHeader';
 import OverlaySpinner from '../../spinner/OverlaySpinner';
 
 import '../auth.scss';
 import GoogleIcon from '../../../resources/img/icons/Google.svg'
+import { getUserInfo } from '../../../services/firebase/FirestoreService';
 
 const SignIn = () => {
     const {loadingStatus} = useSelector(state => state.userInfo);
     const dispatch = useDispatch();
 
-    const GoggleProvider = new GoogleAuthProvider();
+    const [
+        createUserInfo
+    ] = useCreateUserInfoMutation();
+
+    const signInWithGoogle = () => {
+        dispatch(setLoadingStatus('loading'));
+        signInWithPopup(auth, googleProvider)
+            .then(async (result) => {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user;
+                // IdP data available using getAdditionalUserInfo(result)
+
+                const isUser = Object.keys(await getUserInfo(user.uid)).length > 1;
+
+                if (!isUser) {
+                    createUserInfo({
+                        userId: user.uid,
+                        content: {
+                            name: user.displayName.split(' ')[0].toLowerCase(),
+                            surname: user.displayName.split(' ')[1].toLowerCase(),
+                            email: user.email,
+                            profession: '',
+                            about: '',
+                            links: [],
+                            avatarImage: {
+                                id: 'default-avatar',
+                                url: 'https://firebasestorage.googleapis.com/v0/b/personalblogflexus37.appspot.com/o/users%2Fdefault-avatar.jpg?alt=media&token=59354186-fdc6-47d3-81dd-af5af855d82b'
+                            },
+                            profilePreviewImage: {
+                                id: 'default-preview-profile-image',
+                                url: 'https://firebasestorage.googleapis.com/v0/b/personalblogflexus37.appspot.com/o/users%2Fdefault-preview-profile-image.jpg?alt=media&token=a75acc54-4077-4a15-a0e3-61df0aaf39a0'
+                            }
+                        }
+                    })
+                }
+
+                dispatch(setUserId(user.uid));
+                dispatch(setUserAuthentication(true));
+                dispatch(setLoadingStatus('idle'));
+
+            }).catch((error) => {
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = GoogleAuthProvider.credentialFromError(error);
+                // ...
+                console.error(errorCode, errorMessage, email, credential);
+                dispatch(setLoadingStatus('idle'));
+            });
+    }
 
     return (
         <div className="auth">
@@ -39,10 +96,8 @@ const SignIn = () => {
                             }}
                             validationSchema={Yup.object({
                                 email: Yup.string()
-                                        .email('Неправильный email адрес')
-                                        .required('Обязательное поле!'),
+                                        .email('Неправильный email адрес'),
                                 password: Yup.string()
-                                        .required('Обязательное поле!')
                             })}
                             onSubmit={(values, {setSubmitting}) => {
                                 setSubmitting(true);
@@ -93,7 +148,7 @@ const SignIn = () => {
                                     <span className="form__line"></span>
                                 </div>
                                 <button className="auth__submit btn btn--small btn--rounded btn--blue">Войти</button>
-                                <button className="auth__submit btn btn--small btn--rounded btn--black">
+                                <button type='button' onClick={() => signInWithGoogle()} className="btn btn--small btn--rounded btn--black auth__submit">
                                     <img src={GoogleIcon} alt="" />
                                     <p>Войти c помощью Google</p>
                                 </button>

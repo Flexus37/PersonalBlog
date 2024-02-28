@@ -80,6 +80,7 @@
     &__submit {
         display: flex;
         justify-content: center;
+        align-items: center;
         width: 100%;
         margin-bottom: 1.5rem;
 
@@ -92,12 +93,15 @@
         img {
             display: inline-block;
             margin-right: 1rem;
-            width: 1.4rem;
-            height: 1.4rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            line-height: 1;
         }
 
         p {
             display: inline-block;
+            text-align: center;
+            line-height: 1;
         }
     }
 
