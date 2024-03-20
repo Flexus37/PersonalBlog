@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { Link, useParams } from 'react-router-dom';
-import { useGetUserInfoQuery } from '../../services/api/apiSlice';
-import { Icon } from '@iconify/react';
+import { Icon } from '@iconify/react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { useGetUserInfoQuery } from '../../services/api/apiSlice'
 
-import ContactModal from '../modals/ContactModal';
+import ContactModal from '../modals/ContactModal'
 
-import './sidebar.scss';
+import './sidebar.scss'
 
-import defaultAvatarImage from '../../resources/img/profile/default-avatar.jpg';
-import defaultPreviewProfileImage from '../../resources/img/profile/default-preview-profile-image.jpg';
+import defaultAvatarImage from '../../resources/img/profile/default-avatar.jpg'
+import defaultPreviewProfileImage from '../../resources/img/profile/default-preview-profile-image.jpg'
 
 const Sidebar = () => {
     const [name, setName] = useState('');
@@ -55,11 +55,6 @@ const Sidebar = () => {
         }
     }, [userInfo])
 
-    const onHandleShowModal = () => {
-        setShowModal(true);
-        document.body.style.overflow = 'hidden';
-    }
-
     const renderLinks = (links) => {
         if (!links || links.length === 0) {
             return null;
@@ -68,7 +63,7 @@ const Sidebar = () => {
         return links.map(item => {
             return (
                 <li key={item.value} className="social__item">
-                    <a className="social__link" href={item.url} target="_blank">
+                    <a className="social__link" href={item.url} target="_blank" rel='noreferrer'>
                         <Icon className='social__icon' icon={item.value} alt={item.label} />
                     </a>
                 </li>
@@ -87,12 +82,12 @@ const Sidebar = () => {
                 null
             }
             <div className="sidebar__header">
-                <img src={profilePreviewImage.file} alt="Sidebar header image"/>
+                <img src={profilePreviewImage.file} alt="Sidebar header"/>
             </div>
 
             <div className="sidebar__content">
                 <div className="profile">
-                    <img className="profile__avatar" src={avatarImage.file} alt="User avatar image"/>
+                    <img className="profile__avatar" src={avatarImage.file} alt="User avatar"/>
                     <div className="profile__header">
                         <div className="profile__name">{`${name} ${surname}`}</div>
                         <div className="profile__prof">{profession}</div>
